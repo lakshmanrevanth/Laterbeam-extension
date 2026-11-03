@@ -6,20 +6,35 @@
   <link rel="stylesheet" href="popup.css" />
 </head>
 <body>
+  <svg class="sprite" aria-hidden="true">
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 9.8-9.8M16 7l3 3M19 4l2 2"/></symbol>
+    <symbol id="i-open" viewBox="0 0 24 24"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M12 16v-4M12 8h.01"/></symbol>
+    <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></symbol>
+  </svg>
+
   <header class="top">
-    <img src="icons/icon32.png" alt="" width="22" height="22" />
+    <img src="icons/icon32.png" alt="" width="24" height="24" />
     <strong>CheckLater</strong>
-    <button id="codeChip" class="chip-btn" hidden title="Click to copy your code"></button>
+    <button id="codeChip" class="code-chip" hidden title="Your code. Click to copy.">
+      <svg class="ic"><use href="#i-key"/></svg><span id="codeChipText"></span>
+    </button>
   </header>
 
   <!-- Firebase not configured -->
   <section id="viewSetup" class="view" hidden>
     <h2>Almost there</h2>
-    <p class="muted">Add your Firebase config to <code>shared/config.js</code>, run <code>npm run sync</code>, then reload the extension.</p>
+    <p class="muted">Fill in <code>.env</code>, run <code>npm run sync</code>, then reload the extension.</p>
   </section>
 
   <!-- Not linked -->
   <section id="viewAuth" class="view" hidden>
+    <div class="intro">
+      <h2>Save any page. Open it anywhere.</h2>
+      <p class="muted small">Link this browser to your CheckLater space with your code.</p>
+    </div>
     <div class="tabs" role="tablist">
       <button class="tab active" data-tab="signin" role="tab">I have a code</button>
       <button class="tab" data-tab="signup" role="tab">New here</button>
@@ -36,47 +51,50 @@
       <label for="nameInput">Your name</label>
       <input id="nameInput" placeholder="e.g. Alex" maxlength="32" autocomplete="nickname" />
       <button class="primary" type="submit">Create my code</button>
+      <p class="muted small">No email or password. You'll get one code that works everywhere.</p>
     </form>
 
     <div id="newCode" class="stack" hidden>
-      <p>Your code is ready. Write it down. Any device can sign in with it.</p>
+      <p><strong>Your code is ready.</strong> Keep it safe. Any device can sign in with it.</p>
       <div class="big-code" id="newCodeValue"></div>
-      <button class="primary" id="newCodeDone">I saved it. Continue</button>
+      <button class="primary" id="newCodeDone">I saved it, continue</button>
     </div>
     <p id="authError" class="error" hidden></p>
   </section>
 
   <!-- Linked: save current page -->
   <section id="viewMain" class="view" hidden>
-    <div class="page">
-      <img id="pageIcon" alt="" width="20" height="20" />
+    <div class="page-card">
+      <span class="fav"><img id="pageIcon" alt="" width="20" height="20" /></span>
       <div class="page-text">
         <input id="titleInput" class="title-input" aria-label="Title" maxlength="300" />
         <div id="pageUrl" class="muted small ellipsis"></div>
       </div>
     </div>
-    <p id="dupHint" class="hint" hidden></p>
+    <p id="dupHint" class="hint" hidden><svg class="ic"><use href="#i-info"/></svg><span id="dupText"></span></p>
 
+    <div class="field-label">Category <span id="smartTag" class="smart" hidden>Smart pick</span></div>
     <div id="categories" class="cats" role="radiogroup" aria-label="Category"></div>
     <textarea id="noteInput" rows="2" maxlength="2000" placeholder="Add a note (optional)"></textarea>
-    <button id="saveBtn" class="primary">Save to CheckLater</button>
+    <button id="saveBtn" class="primary save"><svg class="ic"><use href="#i-check"/></svg><span id="saveLabel">Save to CheckLater</span><kbd>Ctrl ⏎</kbd></button>
     <p id="saveError" class="error" hidden></p>
 
     <div id="recentWrap" hidden>
-      <h3>Recent</h3>
+      <div class="recent-head"><h3>Recently saved</h3></div>
       <ul id="recent" class="recent"></ul>
     </div>
 
     <footer class="foot">
-      <a id="openApp" href="#" target="_blank">Open app ↗</a>
+      <a id="openApp" href="#" target="_blank" rel="noopener"><svg class="ic"><use href="#i-open"/></svg>Open app</a>
       <span class="muted small" id="whoami"></span>
-      <button id="signOut" class="link">Unlink</button>
+      <button id="signOut" class="link" title="Unlink this browser"><svg class="ic"><use href="#i-logout"/></svg></button>
     </footer>
   </section>
 
   <section id="viewSaved" class="view saved" hidden>
-    <div class="tick">✓</div>
-    <p id="savedMsg">Saved</p>
+    <div class="tick"><svg class="ic"><use href="#i-check"/></svg></div>
+    <p id="savedMsg" class="saved-title">Saved</p>
+    <p class="muted small">It's on every device linked to your code.</p>
   </section>
 
   <script type="module" src="popup.js"></script>

@@ -4,6 +4,7 @@ rules_version = '2';
 // - Every client signs in anonymously (blocks raw unauthenticated traffic).
 // - Spaces can be fetched by exact code but never listed, so codes cannot be enumerated.
 // - No collection-group rule exists, so items cannot be queried across spaces.
+// - Every write is shape- and size-checked so the public API key can't be used to store junk.
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -16,7 +17,11 @@ service cloud.firestore {
     }
 
     function validCategories(cats) {
-      return cats is list && cats.size() <= 50;
+      return cats is list && cats.size() >= 1 && cats.size() <= 50;
+    }
+
+    function optString(d, key, max) {
+      return !(key in d) || (d[key] is string && d[key].size() <= max);
     }
 
     function validItem() {
@@ -25,12 +30,18 @@ service cloud.firestore {
                                'source', 'status', 'pinned', 'createdAt', 'updatedAt', 'remindAt'])
         && d.keys().hasAll(['url', 'title', 'category', 'status', 'createdAt'])
         && d.url is string && d.url.size() > 0 && d.url.size() <= 4096
+        && d.url.matches('^https?://.*')
         && d.title is string && d.title.size() <= 500
-        && (!('note' in d) || (d.note is string && d.note.size() <= 5000))
-        && d.category is string && d.category.size() <= 64
+        && d.category is string && d.category.size() > 0 && d.category.size() <= 64
         && d.status in ['unread', 'done']
+        && d.createdAt is timestamp
+        && optString(d, 'note', 5000)
+        && optString(d, 'domain', 255)
+        && optString(d, 'favicon', 512)
+        && (!('source' in d) || d.source in ['web', 'extension', 'share', 'import'])
         && (!('pinned' in d) || d.pinned is bool)
-        && d.createdAt is timestamp;
+        && (!('updatedAt' in d) || d.updatedAt is timestamp)
+        && (!('remindAt' in d) || d.remindAt == null || d.remindAt is timestamp);
     }
 
     match /spaces/{code} {
@@ -43,6 +54,7 @@ service cloud.firestore {
         && request.resource.data.username is string
         && request.resource.data.username.size() >= 2
         && request.resource.data.username.size() <= 32
+        && request.resource.data.createdAt is timestamp
         && validCategories(request.resource.data.categories);
 
       // Only the category list can change after creation.

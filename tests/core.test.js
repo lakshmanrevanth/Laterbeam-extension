@@ -65,3 +65,30 @@ test('Firestore REST encoding round-trips', () => {
   const back = fromFields(toFields(obj));
   assert.deepEqual(back, obj);
 });
+
+test('sanitizeImported keeps valid items and rejects junk', async () => {
+  const { sanitizeImported } = await import('../shared/core.js');
+  assert.equal(sanitizeImported({ url: 'javascript:alert(1)' }), null);
+  assert.equal(sanitizeImported(null), null);
+  const it = sanitizeImported({
+    url: 'https://youtube.com/watch?v=1&utm_source=x', title: 'T', category: 'nope',
+    status: 'done', pinned: true, createdAt: '2026-01-01T00:00:00Z', evil: 'x',
+  });
+  assert.equal(it.url, 'https://youtube.com/watch?v=1');
+  assert.equal(it.category, 'watch'); // unknown category → smart guess
+  assert.equal(it.status, 'done');
+  assert.equal(it.pinned, true);
+  assert.equal(it.source, 'import');
+  assert.equal(it.createdAt.toISOString(), '2026-01-01T00:00:00.000Z');
+  assert.equal('evil' in it, false);
+});
+
+test('dateGroup buckets by calendar day', async () => {
+  const { dateGroup } = await import('../shared/core.js');
+  const now = new Date(2026, 10, 3, 9, 0);
+  assert.equal(dateGroup(new Date(2026, 10, 3, 1, 0), now), 'Today');
+  assert.equal(dateGroup(new Date(2026, 10, 2, 23, 0), now), 'Yesterday');
+  assert.equal(dateGroup(new Date(2026, 9, 31), now), 'This week');
+  assert.equal(dateGroup(new Date(2026, 9, 20), now), 'This month');
+  assert.equal(dateGroup(new Date(2025, 0, 1), now), 'Earlier');
+});

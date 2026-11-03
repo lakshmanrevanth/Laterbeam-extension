@@ -1,9 +1,11 @@
-// Minimal offline support: the app shell is cached so CheckLater opens without a network.
-// Data offline is handled separately by Firestore's built-in cache.
-const CACHE = 'checklater-v1';
+// Offline support: the app shell is cached so CheckLater opens without a network.
+// Saved links offline are handled separately by Firestore's built-in cache.
+// __BUILD_ID__ is replaced at build time, so every deploy installs a fresh cache and drops the old one.
+const CACHE = 'checklater-__BUILD_ID__';
+const SHELL = ['/', '/manifest.webmanifest', '/icons/icon.svg', '/icons/icon-192.png'];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(['/', '/manifest.webmanifest', '/icons/icon.svg'])));
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)));
   self.skipWaiting();
 });
 
@@ -19,9 +21,19 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(req.url);
   if (req.method !== 'GET' || url.origin !== location.origin) return;
 
-  // Pages (including /share): network first, fall back to cached shell.
+  // Pages (including /share): network first, keep the cached shell fresh, fall back to it offline.
   if (req.mode === 'navigate') {
-    e.respondWith(fetch(req).catch(() => caches.match('/')));
+    e.respondWith(
+      fetch(req)
+        .then((res) => {
+          if (res.ok && url.pathname === '/' && !url.search) {
+            const copy = res.clone();
+            caches.open(CACHE).then((c) => c.put('/', copy));
+          }
+          return res;
+        })
+        .catch(() => caches.match('/')),
+    );
     return;
   }
 

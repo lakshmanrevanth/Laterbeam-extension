@@ -1,0 +1,30 @@
+/* Layout for the design prototypes. The popups themselves use the real extension/popup.css. */
+body {
+  width: auto; min-height: 100vh; margin: 0; padding: 36px 40px;
+  background: radial-gradient(900px 500px at 0% 0%, #e9e9ff, transparent 60%), #f4f4f9;
+}
+@media (prefers-color-scheme: dark) {
+  body { background: radial-gradient(900px 500px at 0% 0%, #1d1d3a, transparent 60%), #0b0b10; }
+}
+.proto-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 26px; }
+.proto-head h1 { margin: 0; font-size: 24px; letter-spacing: -.02em; color: var(--text); }
+.proto-head p { color: var(--muted); }
+.board { display: grid; grid-template-columns: repeat(3, 372px); gap: 32px; align-items: start; justify-content: center; }
+.col { display: flex; flex-direction: column; gap: 28px; }
+.caption { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px 4px; }
+.popup {
+  width: 372px; background: var(--bg); border-radius: 12px; overflow: hidden;
+  box-shadow: 0 0 0 1px var(--line), 0 18px 50px rgba(20, 20, 60, .18);
+}
+.popup .view[hidden] { display: none !important; }
+.ctx {
+  width: 300px; background: var(--bg); border-radius: 10px; padding: 6px 0; font-size: 13px; color: var(--text);
+  box-shadow: 0 0 0 1px var(--line), 0 12px 32px rgba(20, 20, 60, .18);
+}
+.ctx div { padding: 6px 14px; display: flex; gap: 8px; align-items: center; }
+.ctx .hl { background: var(--brand-soft); color: var(--brand-ink); }
+.ctx hr { border: 0; border-top: 1px solid var(--line); margin: 5px 0; }
+.ctx .arrow { margin-left: auto; color: var(--muted); }
+.ctx .kbd { margin-left: auto; color: var(--muted); font-size: 11px; }
+.ctx-wrap { display: flex; gap: 0; align-items: flex-start; }
+.ctx.sub { width: 190px; margin-top: 70px; margin-left: -8px; }

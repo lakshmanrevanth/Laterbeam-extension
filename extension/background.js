@@ -1,4 +1,4 @@
-﻿// Right-click menus + keyboard quick-save.
+// Right-click menus + keyboard quick-save.
 import { addItem } from './lib/api.js';
 import { getSession } from './lib/session.js';
 import { suggestCategory, isSavableUrl } from './lib/shared/core.js';

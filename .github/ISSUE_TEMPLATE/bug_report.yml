@@ -1,0 +1,54 @@
+name: Bug report
+description: Something in CheckLater doesn't work as expected.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! **Never paste your space code** (like `XXXX-XXXX-XXXX`) here: anyone who has it can read and edit your links.
+        For security problems, use the [security policy](https://github.com/lakshmanrevanth/check-later-extension/security/policy) instead.
+  - type: dropdown
+    id: component
+    attributes:
+      label: Where did it happen?
+      multiple: true
+      options:
+        - Web app (browser)
+        - Web app (installed PWA on Android)
+        - Web app (iPhone / iPad)
+        - Chrome extension popup
+        - Chrome extension right-click menu
+        - Chrome extension keyboard shortcut
+        - Sharing from another app
+        - Self-hosting / deployment
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead.
+      placeholder: |
+        1. Open ...
+        2. Click ...
+        3. Expected ..., but ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Extension version from chrome://extensions, or the date you used the web app.
+      placeholder: "1.0.0"
+  - type: input
+    id: environment
+    attributes:
+      label: Browser and OS
+      placeholder: "Chrome 142 on Windows 11 / Android 16"
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Errors or screenshots
+      description: Console errors (web app DevTools, or the extension's service worker console in chrome://extensions) and screenshots. Remove your space code first.

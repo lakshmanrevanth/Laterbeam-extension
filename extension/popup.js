@@ -10,6 +10,7 @@ const show = (id) => views.forEach((v) => ($(v).hidden = v !== id));
 let session = null;
 let tab = null;
 let selectedCat = null;
+let suggestedCat = null;
 
 function showError(el, msg) {
   el.textContent = msg;
@@ -81,6 +82,7 @@ function initAuth() {
 
 // ---------- Main view ----------
 function renderCategories() {
+  $('smartTag').hidden = selectedCat !== suggestedCat;
   const wrap = $('categories');
   wrap.replaceChildren(
     ...session.categories.map((c) => {
@@ -125,7 +127,7 @@ async function enterMain() {
   session = await getSession();
   show('viewMain');
   $('codeChip').hidden = false;
-  $('codeChip').textContent = session.code;
+  $('codeChipText').textContent = session.code;
   $('whoami').textContent = session.username;
   $('openApp').href = WEB_APP_URL;
 
@@ -137,7 +139,7 @@ async function enterMain() {
   $('pageIcon').src = tab?.favIconUrl || faviconFor(url);
   $('saveBtn').disabled = !ok;
 
-  selectedCat = suggestCategory(url, session.categories);
+  selectedCat = suggestedCat = suggestCategory(url, session.categories);
   renderCategories();
   renderRecent();
 
@@ -149,7 +151,8 @@ async function enterMain() {
       if (changed) {
         session.categories = space.categories;
         await setSession(session);
-        if (!session.categories.some((c) => c.id === selectedCat)) selectedCat = suggestCategory(url, session.categories);
+        suggestedCat = suggestCategory(url, session.categories);
+        if (!session.categories.some((c) => c.id === selectedCat)) selectedCat = suggestedCat;
         renderCategories();
       }
     })
@@ -159,7 +162,7 @@ async function enterMain() {
     findByUrl(session.code, url)
       .then((hit) => {
         if (!hit) return;
-        $('dupHint').textContent = `Already saved ${timeAgo(hit.createdAt)}${hit.status === 'done' ? ' (marked done)' : ''}. Saving again adds a new entry.`;
+        $('dupText').textContent = `Already saved ${timeAgo(hit.createdAt)}${hit.status === 'done' ? ' (marked done)' : ''}. Saving again adds a new entry.`;
         $('dupHint').hidden = false;
       })
       .catch(() => {});
@@ -169,7 +172,7 @@ async function enterMain() {
 async function save() {
   const btn = $('saveBtn');
   btn.disabled = true;
-  btn.textContent = 'Saving…';
+  $('saveLabel').textContent = 'Saving…';
   showError($('saveError'), '');
   try {
     await addItem(session.code, {
@@ -186,7 +189,7 @@ async function save() {
   } catch (e) {
     showError($('saveError'), friendly(e));
     btn.disabled = false;
-    btn.textContent = 'Save to CheckLater';
+    $('saveLabel').textContent = 'Save to CheckLater';
   }
 }
 
@@ -197,8 +200,8 @@ $('noteInput').addEventListener('keydown', (e) => {
 });
 $('codeChip').addEventListener('click', async () => {
   await navigator.clipboard.writeText(session.code);
-  $('codeChip').textContent = 'Copied!';
-  setTimeout(() => ($('codeChip').textContent = session.code), 1200);
+  $('codeChipText').textContent = 'Copied!';
+  setTimeout(() => ($('codeChipText').textContent = session.code), 1200);
 });
 $('signOut').addEventListener('click', async () => {
   if (!confirm('Unlink this browser? Your saved links stay safe under your code.')) return;

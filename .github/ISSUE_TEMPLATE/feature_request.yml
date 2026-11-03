@@ -1,0 +1,38 @@
+name: Feature request
+description: Suggest an idea or improvement.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: Describe the situation, not only the solution. "When I ..., I want to ..., so that ..."
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: What would you like to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you've considered
+  - type: dropdown
+    id: component
+    attributes:
+      label: Which part?
+      multiple: true
+      options:
+        - Web app
+        - Chrome extension
+        - Sharing from phone
+        - Sync / data
+        - Self-hosting / docs
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Contributing
+      options:
+        - label: I'd like to work on this myself.
