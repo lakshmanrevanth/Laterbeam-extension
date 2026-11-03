@@ -2,9 +2,20 @@
   "manifest_version": 3,
   "name": "CheckLater",
   "short_name": "CheckLater",
-  "version": "0.1.0",
-  "description": "Send any page or link to CheckLater and open it later on your phone or any device.",
-  "permissions": ["activeTab", "contextMenus", "storage"],
+  "version": "1.0.0",
+  "description": "Save any page, link, image or selection in one click and open it later on your phone or any device. No passwords.",
+  "homepage_url": "https://github.com/lakshmanrevanth/check-later-extension",
+  "minimum_chrome_version": "116",
+  "permissions": [
+    "activeTab",
+    "contextMenus",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://firestore.googleapis.com/*",
+    "https://identitytoolkit.googleapis.com/*",
+    "https://securetoken.googleapis.com/*"
+  ],
   "background": {
     "service_worker": "background.js",
     "type": "module"
@@ -27,11 +38,15 @@
   },
   "commands": {
     "_execute_action": {
-      "suggested_key": { "default": "Alt+Shift+S" },
+      "suggested_key": {
+        "default": "Alt+Shift+S"
+      },
       "description": "Open CheckLater"
     },
     "quick-save": {
-      "suggested_key": { "default": "Alt+Shift+D" },
+      "suggested_key": {
+        "default": "Alt+Shift+D"
+      },
       "description": "Quick-save this page (smart category)"
     }
   }

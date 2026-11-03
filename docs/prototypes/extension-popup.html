@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>CheckLater extension prototypes</title>
+  <!-- Real extension styles, so the prototype can't drift from the product. -->
+  <link rel="stylesheet" href="../../extension/popup.css" />
+  <link rel="stylesheet" href="prototype.css" />
+</head>
+<body>
+  <svg class="sprite" aria-hidden="true">
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 9.8-9.8M16 7l3 3M19 4l2 2"/></symbol>
+    <symbol id="i-open" viewBox="0 0 24 24"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M12 16v-4M12 8h.01"/></symbol>
+    <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></symbol>
+  </svg>
+
+  <header class="proto-head">
+    <h1>CheckLater for Chrome</h1>
+    <p>Popup, right-click menu and sign-in states</p>
+  </header>
+
+  <div class="board">
+    <!-- 1. Save the current page -->
+    <div>
+      <p class="caption">Toolbar popup · Alt+Shift+S</p>
+      <div class="popup">
+        <header class="top">
+          <img src="../../extension/icons/icon32.png" alt="" width="24" height="24" />
+          <strong>CheckLater</strong>
+          <button class="code-chip"><svg class="ic"><use href="#i-key"/></svg><span>K7QM-2HXP-9WAD</span></button>
+        </header>
+        <section class="view">
+          <div class="page-card">
+            <span class="fav"><img src="https://www.google.com/s2/favicons?domain=youtube.com&sz=64" alt="" width="20" height="20" /></span>
+            <div class="page-text">
+              <input class="title-input" value="But what is a neural network? | Deep learning" aria-label="Title" />
+              <div class="muted small ellipsis">youtube.com/watch</div>
+            </div>
+          </div>
+          <p class="hint"><svg class="ic"><use href="#i-info"/></svg><span>Already saved 3d ago. Saving again adds a new entry.</span></p>
+          <div class="field-label">Category <span class="smart">Smart pick</span></div>
+          <div class="cats">
+            <button class="cat" aria-checked="false">📖 Read</button>
+            <button class="cat" aria-checked="true">🎬 Watch</button>
+            <button class="cat" aria-checked="false">💼 Work</button>
+            <button class="cat" aria-checked="false">🛒 Shopping</button>
+            <button class="cat" aria-checked="false">📄 Docs</button>
+            <button class="cat" aria-checked="false">📌 Other</button>
+          </div>
+          <textarea rows="2" placeholder="Add a note (optional)">Watch before the ML meetup</textarea>
+          <button class="primary save"><svg class="ic"><use href="#i-check"/></svg><span>Save to CheckLater</span><kbd>Ctrl ⏎</kbd></button>
+          <div>
+            <div class="recent-head"><h3>Recently saved</h3></div>
+            <ul class="recent">
+              <li><a href="#"><img src="https://www.google.com/s2/favicons?domain=github.com&sz=32" width="16" height="16" alt="" /><span>vitejs/vite: Next generation frontend tooling</span><small>2h ago</small></a></li>
+              <li><a href="#"><img src="https://www.google.com/s2/favicons?domain=amazon.in&sz=32" width="16" height="16" alt="" /><span>Sony WH-1000XM5 Wireless Headphones</span><small>5h ago</small></a></li>
+              <li><a href="#"><img src="https://www.google.com/s2/favicons?domain=paulgraham.com&sz=32" width="16" height="16" alt="" /><span>How to Do Great Work</span><small>1d ago</small></a></li>
+            </ul>
+          </div>
+          <footer class="foot">
+            <a href="#"><svg class="ic"><use href="#i-open"/></svg>Open app</a>
+            <span class="muted small">Alex</span>
+            <button class="link"><svg class="ic"><use href="#i-logout"/></svg></button>
+          </footer>
+        </section>
+      </div>
+    </div>
+
+    <!-- 2. Right-click + saved -->
+    <div class="col">
+      <div>
+        <p class="caption">Right-click any page, link, image or text</p>
+        <div class="ctx-wrap">
+          <div class="ctx">
+            <div>Open link in new tab</div>
+            <div>Open link in incognito window</div>
+            <div>Copy link address</div>
+            <hr />
+            <div class="hl"><img src="../../extension/icons/icon16.png" width="16" height="16" alt="" />Send to CheckLater<span class="arrow">▸</span></div>
+            <hr />
+            <div>Inspect</div>
+          </div>
+          <div class="ctx sub">
+            <div class="hl">⚡ Smart category</div>
+            <hr />
+            <div>📖 Read</div>
+            <div>🎬 Watch</div>
+            <div>💼 Work</div>
+            <div>🛒 Shopping</div>
+            <div>📄 Docs</div>
+            <div>📌 Other</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p class="caption">After saving</p>
+        <div class="popup">
+          <header class="top">
+            <img src="../../extension/icons/icon32.png" alt="" width="24" height="24" />
+            <strong>CheckLater</strong>
+            <button class="code-chip"><svg class="ic"><use href="#i-key"/></svg><span>K7QM-2HXP-9WAD</span></button>
+          </header>
+          <section class="view saved">
+            <div class="tick"><svg class="ic"><use href="#i-check"/></svg></div>
+            <p class="saved-title">Saved to 🎬 Watch</p>
+            <p class="muted small">It's on every device linked to your code.</p>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Link a browser -->
+    <div class="col">
+      <div>
+        <p class="caption">First run: link this browser</p>
+        <div class="popup">
+          <header class="top">
+            <img src="../../extension/icons/icon32.png" alt="" width="24" height="24" />
+            <strong>CheckLater</strong>
+          </header>
+          <section class="view">
+            <div class="intro">
+              <h2>Save any page. Open it anywhere.</h2>
+              <p class="muted small">Link this browser to your CheckLater space with your code.</p>
+            </div>
+            <div class="tabs">
+              <button class="tab active">I have a code</button>
+              <button class="tab">New here</button>
+            </div>
+            <div class="stack">
+              <label>Your CheckLater code</label>
+              <input class="code-input" value="K7QM-2HXP-9WAD" />
+              <button class="primary">Link this browser</button>
+              <p class="muted small">Use the same code on every device to see the same saved links.</p>
+            </div>
+          </section>
+        </div>
+      </div>
+      <div>
+        <p class="caption">New here: your code</p>
+        <div class="popup">
+          <section class="view">
+            <div class="stack">
+              <p><strong>Your code is ready.</strong> Keep it safe. Any device can sign in with it.</p>
+              <div class="big-code">K7QM-2HXP-9WAD</div>
+              <button class="primary">I saved it, continue</button>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

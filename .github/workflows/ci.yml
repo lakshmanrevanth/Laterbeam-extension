@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # Firebase web config is public (not a secret). Store it as repository
+      # *variables* (Settings → Secrets and variables → Actions → Variables).
+      # If they are unset (e.g. on forks) the build still runs with empty values.
+      - name: Write .env
+        run: |
+          cat > .env <<ENV
+          VITE_FIREBASE_API_KEY=${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN=${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID=${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET=${{ vars.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID=${{ vars.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID=${{ vars.VITE_FIREBASE_APP_ID }}
+          VITE_WEB_APP_URL=${{ vars.VITE_WEB_APP_URL }}
+          ENV
+
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - run: npm run package
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: checklater-extension
+          path: release/*.zip
+          if-no-files-found: error

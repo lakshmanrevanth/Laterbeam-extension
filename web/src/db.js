@@ -6,7 +6,7 @@ import {
   doc, collection, query, orderBy, onSnapshot, getDocFromServer, runTransaction,
   addDoc, updateDoc, deleteDoc, setDoc, serverTimestamp, writeBatch,
 } from 'firebase/firestore';
-import { firebaseConfig } from '@shared/config.js';
+import { firebaseConfig, APP_CHECK_SITE_KEY } from '@shared/config.js';
 import { generateCode, cleanUsername, DEFAULT_CATEGORIES, buildItem } from '@shared/core.js';
 
 let db;
@@ -14,6 +14,11 @@ let auth;
 
 export async function initFirebase() {
   const app = initializeApp(firebaseConfig);
+  if (APP_CHECK_SITE_KEY) {
+    // Loaded only when configured, so projects without App Check don't pay for it.
+    const { initializeAppCheck, ReCaptchaEnterpriseProvider } = await import('firebase/app-check');
+    initializeAppCheck(app, { provider: new ReCaptchaEnterpriseProvider(APP_CHECK_SITE_KEY), isTokenAutoRefreshEnabled: true });
+  }
   auth = getAuth(app);
   db = initializeFirestore(app, {
     localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
@@ -97,6 +102,15 @@ export function deleteItem(code, id) {
 export function restoreItem(code, item) {
   const { id, pendingSync, createdAt, ...rest } = item;
   return setDoc(doc(itemsRef(code), id), { ...rest, createdAt, updatedAt: serverTimestamp() });
+}
+
+// Items come from sanitizeImported(), so they already match the Firestore rules.
+export async function importItems(code, items) {
+  for (let i = 0; i < items.length; i += 400) {
+    const batch = writeBatch(db);
+    items.slice(i, i + 400).forEach((item) => batch.set(doc(itemsRef(code)), { ...item, updatedAt: serverTimestamp() }));
+    await batch.commit();
+  }
 }
 
 export async function moveItems(code, ids, category) {

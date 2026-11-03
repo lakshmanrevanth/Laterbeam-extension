@@ -1,16 +1,28 @@
 {
   "name": "checklater",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
   "description": "Save links from any browser or phone into one shared space, identified by a unique code.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lakshmanrevanth/check-later-extension.git"
+  },
+  "homepage": "https://checklater-ea1ba.web.app",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "sync": "node scripts/sync-shared.mjs",
     "icons": "node scripts/make-icons.mjs",
     "dev": "npm run sync && vite",
     "build": "npm run sync && vite build",
     "preview": "vite preview",
+    "pretest": "npm run sync",
     "test": "node --test \"tests/**/*.test.js\"",
+    "package": "npm run sync && node scripts/package-extension.mjs",
+    "screenshots": "npm run build && node scripts/screenshots.mjs",
     "deploy": "npm run build && firebase deploy"
   },
   "dependencies": {

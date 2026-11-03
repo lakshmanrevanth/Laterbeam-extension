@@ -119,6 +119,33 @@ export function buildItem({ url, title, note = '', category, source }) {
   };
 }
 
+// Turns one entry from an exported JSON file into a valid item, or null if it isn't one.
+// Used by "Import" so a hand-edited or foreign file can't write malformed documents.
+export function sanitizeImported(raw, categories = DEFAULT_CATEGORIES) {
+  if (!raw || typeof raw !== 'object' || !isSavableUrl(raw.url)) return null;
+  const ids = new Set(categories.map((c) => c.id));
+  const category = ids.has(raw.category) ? raw.category : suggestCategory(raw.url, categories);
+  const created = new Date(raw.createdAt);
+  return {
+    ...buildItem({ url: raw.url, title: raw.title, note: raw.note, category, source: 'import' }),
+    status: raw.status === 'done' ? 'done' : 'unread',
+    pinned: raw.pinned === true,
+    createdAt: Number.isNaN(created.getTime()) ? new Date() : created,
+  };
+}
+
+// Section heading for the list: Today, Yesterday, This week, This month, Earlier.
+export function dateGroup(date, now = new Date()) {
+  if (!date) return 'Today';
+  const day = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  const diff = Math.round((day(now) - day(date)) / 86400e3);
+  if (diff <= 0) return 'Today';
+  if (diff === 1) return 'Yesterday';
+  if (diff < 7) return 'This week';
+  if (diff < 31) return 'This month';
+  return 'Earlier';
+}
+
 export function timeAgo(date) {
   if (!date) return 'just now';
   const s = Math.max(0, (Date.now() - date.getTime()) / 1000);

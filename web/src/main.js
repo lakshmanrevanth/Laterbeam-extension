@@ -2,9 +2,8 @@ import QRCode from 'qrcode';
 import { isConfigured } from '@shared/config.js';
 import {
   DEFAULT_CATEGORIES, normalizeCode, suggestCategory, extractUrl, isSavableUrl,
-  cleanUrl, getDomain, faviconFor, timeAgo, slugify,
+  cleanUrl, getDomain, faviconFor, timeAgo, slugify, dateGroup, sanitizeImported,
 } from '@shared/core.js';
-import * as db from './db.js';
 
 const $ = (id) => document.getElementById(id);
 const VIEWS = ['viewSetup', 'viewLoading', 'viewWelcome', 'viewApp'];
@@ -12,6 +11,16 @@ const show = (id) => VIEWS.forEach((v) => ($(v).hidden = v !== id));
 
 const SESSION_KEY = 'checklater.session';
 const PENDING_SHARE_KEY = 'checklater.pendingShare';
+const THEME_KEY = 'checklater.theme';
+
+// Demo mode: /?demo runs on in-memory sample data. /?demo=add|item|account|done|search|welcome
+// opens a specific screen (used by `npm run screenshots`).
+const params = new URLSearchParams(location.search);
+const DEMO = params.has('demo');
+const DEMO_SCREEN = params.get('demo') || '';
+
+/** @type {typeof import('./db.js')} */
+let db;
 
 const state = {
   session: null, // { code, username }
@@ -26,33 +35,46 @@ const state = {
 // ---------- Helpers ----------
 const esc = (s) =>
   String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const ic = (name, cls = '') => `<svg class="ic ${cls}" aria-hidden="true"><use href="#i-${name}"/></svg>`;
 const safeHref = (url) => (isSavableUrl(url) ? url : '#');
 const UNCATEGORIZED = { id: '__none', name: 'Uncategorized', emoji: '❔' };
 const catOf = (item) => state.categories.find((c) => c.id === item.category) || UNCATEGORIZED;
+const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
 
+let memorySession = null; // demo mode never touches the real saved session
 function loadSession() {
+  if (DEMO) return memorySession;
   try {
     return JSON.parse(localStorage.getItem(SESSION_KEY));
   } catch {
     return null;
   }
 }
+function saveSession(s) {
+  if (DEMO) memorySession = s;
+  else localStorage.setItem(SESSION_KEY, JSON.stringify(s));
+}
 
 let toastTimer;
-function toast(msg, action) {
+function toast(msg, { action, error = false } = {}) {
+  const el = $('toast');
   $('toastMsg').textContent = msg;
+  $('toastIcon').innerHTML = `<use href="#i-${error ? 'x' : action?.icon || 'check'}"/>`;
+  el.classList.toggle('err', error);
   const btn = $('toastAction');
   btn.hidden = !action;
   if (action) {
     btn.textContent = action.label;
     btn.onclick = () => {
-      $('toast').hidden = true;
+      el.hidden = true;
       action.run();
     };
   }
-  $('toast').hidden = false;
+  el.hidden = true; // restart the entrance animation
+  void el.offsetWidth;
+  el.hidden = false;
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => ($('toast').hidden = true), action ? 5000 : 2500);
+  toastTimer = setTimeout(() => (el.hidden = true), action ? 5000 : 2600);
 }
 
 function friendly(e) {
@@ -61,6 +83,29 @@ function friendly(e) {
   if (/unavailable|offline|network/i.test(m)) return 'You seem to be offline. Try again when connected.';
   if (/admin-restricted|operation-not-allowed/i.test(m)) return 'Enable Anonymous sign-in in Firebase Authentication.';
   return e?.message || m;
+}
+const fail = (e) => toast(friendly(e), { error: true });
+
+// ---------- Theme ----------
+function getTheme() {
+  try {
+    return localStorage.getItem(THEME_KEY) || 'system';
+  } catch {
+    return 'system';
+  }
+}
+function setTheme(theme) {
+  try {
+    if (theme === 'system') localStorage.removeItem(THEME_KEY);
+    else localStorage.setItem(THEME_KEY, theme);
+  } catch {}
+  if (theme === 'system') delete document.documentElement.dataset.theme;
+  else document.documentElement.dataset.theme = theme;
+  renderThemeSeg();
+}
+function renderThemeSeg() {
+  const current = document.documentElement.dataset.theme || 'system';
+  document.querySelectorAll('[data-theme-opt]').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.themeOpt === current)));
 }
 
 // ---------- Share target & deep links ----------
@@ -97,15 +142,18 @@ function takePendingShare() {
 }
 
 // ---------- Welcome ----------
+function selectAuthTab(tab) {
+  document.querySelectorAll('#authTabs .seg').forEach((x) => {
+    x.classList.toggle('active', x.dataset.tab === tab);
+    x.setAttribute('aria-selected', String(x.dataset.tab === tab));
+  });
+  $('formSignin').hidden = tab !== 'signin';
+  $('formSignup').hidden = tab !== 'signup';
+  setAuthError('');
+}
+
 function initWelcome() {
-  document.querySelectorAll('#viewWelcome .seg').forEach((t) =>
-    t.addEventListener('click', () => {
-      document.querySelectorAll('#viewWelcome .seg').forEach((x) => x.classList.toggle('active', x === t));
-      $('formSignin').hidden = t.dataset.tab !== 'signin';
-      $('formSignup').hidden = t.dataset.tab !== 'signup';
-      setAuthError('');
-    }),
-  );
+  document.querySelectorAll('#authTabs .seg').forEach((t) => t.addEventListener('click', () => selectAuthTab(t.dataset.tab)));
 
   $('codeInput').addEventListener('input', (e) => {
     const raw = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
@@ -123,9 +171,9 @@ function initWelcome() {
     btn.disabled = true;
     try {
       const { code, username } = await db.createSpace($('nameInput').value);
-      localStorage.setItem(SESSION_KEY, JSON.stringify({ code, username }));
+      saveSession({ code, username });
       $('formSignup').hidden = true;
-      document.querySelector('#viewWelcome .segmented').hidden = true;
+      $('authTabs').hidden = true;
       $('newCodeValue').textContent = code;
       $('newCode').hidden = false;
       setAuthError('');
@@ -136,7 +184,7 @@ function initWelcome() {
     }
   });
 
-  $('newCodeCopy').addEventListener('click', () => copy($('newCodeValue').textContent));
+  $('newCodeCopy').addEventListener('click', () => copy($('newCodeValue').textContent, 'Code copied'));
   $('newCodeDone').addEventListener('click', enterApp);
 }
 
@@ -146,13 +194,13 @@ function setAuthError(msg) {
 }
 
 async function signIn(input, btn) {
-  const code = normalizeCode(input);
+  const code = DEMO ? input : normalizeCode(input);
   if (!code) return setAuthError('That code doesn’t look right. It has 12 letters and numbers, like ABCD-EFGH-JKMN.');
   if (btn) btn.disabled = true;
   try {
     const space = await db.fetchSpace(code);
-    if (!space) return setAuthError('No space found for that code.');
-    localStorage.setItem(SESSION_KEY, JSON.stringify({ code, username: space.username }));
+    if (!space) return setAuthError('No space found for that code. Check for typos.');
+    saveSession({ code, username: space.username });
     await enterApp();
   } catch (err) {
     setAuthError(friendly(err));
@@ -166,90 +214,135 @@ async function enterApp() {
   state.session = loadSession();
   if (!state.session) return show('viewWelcome');
   show('viewApp');
+  $('demoBanner').hidden = !DEMO;
   $('accountBtn').textContent = (state.session.username || '?').charAt(0).toUpperCase();
 
   state.unsubs.forEach((u) => u());
   state.unsubs = [
     db.watchSpace(state.session.code, (space) => {
-      if (!space) return; // offline first-load; keep defaults
+      if (!space) return; // offline first load: keep defaults
       state.categories = space.categories?.length ? space.categories : DEFAULT_CATEGORIES;
       if (space.username && space.username !== state.session.username) {
         state.session.username = space.username;
-        localStorage.setItem(SESSION_KEY, JSON.stringify(state.session));
+        saveSession(state.session);
       }
       render();
-    }, (e) => toast(friendly(e))),
+    }, fail),
     db.watchItems(state.session.code, (items, meta) => {
       state.items = items;
-      const dot = $('syncDot');
-      const pending = items.some((i) => i.pendingSync);
-      dot.className = `sync-dot${!navigator.onLine || meta.fromCache ? ' offline' : pending ? ' pending' : ''}`;
-      dot.title = !navigator.onLine ? 'Offline. Changes will sync later.' : pending ? 'Syncing…' : 'Synced';
+      renderSync(meta);
       render();
-    }, (e) => toast(friendly(e))),
+    }, fail),
   ];
 
   const share = takePendingShare();
-  if (share) openAdd(share);
+  if (share) openAdd(share, null, 'share');
 }
+
+function renderSync(meta = {}) {
+  const el = $('sync');
+  const pending = state.items.some((i) => i.pendingSync);
+  const offline = !navigator.onLine || meta.fromCache;
+  el.className = `sync${offline ? ' offline' : pending ? ' pending' : ''}`;
+  const label = DEMO ? 'Demo' : offline ? 'Offline' : pending ? 'Syncing' : 'Synced';
+  $('syncLabel').textContent = label;
+  el.title = offline ? 'Offline. Changes will sync when you reconnect.' : pending ? 'Syncing…' : 'All changes synced';
+}
+
+const inView = (i) => (state.view === 'done' ? i.status === 'done' : i.status !== 'done');
 
 function visibleItems() {
   const q = state.q.trim().toLowerCase();
   return state.items
-    .filter((i) => (state.view === 'done' ? i.status === 'done' : i.status !== 'done'))
+    .filter(inView)
     .filter((i) => state.filter === 'all' || catOf(i).id === state.filter)
     .filter((i) => !q || `${i.title} ${i.url} ${i.note} ${catOf(i).name}`.toLowerCase().includes(q))
     .sort((a, b) => Number(b.pinned) - Number(a.pinned) || b.createdAt - a.createdAt);
 }
 
 function renderFilters() {
-  const inView = state.items.filter((i) => (state.view === 'done' ? i.status === 'done' : i.status !== 'done'));
-  const count = (id) => inView.filter((i) => catOf(i).id === id).length;
+  const items = state.items.filter(inView);
+  const count = (id) => items.filter((i) => catOf(i).id === id).length;
   const cats = [...state.categories];
-  if (inView.some((i) => catOf(i) === UNCATEGORIZED)) cats.push(UNCATEGORIZED);
+  if (items.some((i) => catOf(i) === UNCATEGORIZED)) cats.push(UNCATEGORIZED);
   if (state.filter !== 'all' && !cats.some((c) => c.id === state.filter)) state.filter = 'all';
 
   $('filters').innerHTML = [
-    `<button class="chip" data-filter="all" aria-pressed="${state.filter === 'all'}">All<span class="count">${inView.length}</span></button>`,
+    `<button class="chip" data-filter="all" aria-pressed="${state.filter === 'all'}">${ic('layers')}<span class="name">All</span><span class="count">${items.length}</span></button>`,
     ...cats.map(
       (c) =>
-        `<button class="chip" data-filter="${esc(c.id)}" aria-pressed="${state.filter === c.id}">${esc(c.emoji)} ${esc(c.name)}<span class="count">${count(c.id)}</span></button>`,
+        `<button class="chip" data-filter="${esc(c.id)}" aria-pressed="${state.filter === c.id}"><span class="emoji">${esc(c.emoji)}</span><span class="name">${esc(c.name)}</span><span class="count">${count(c.id)}</span></button>`,
     ),
   ].join('');
+
+  $('countUnread').textContent = state.items.filter((i) => i.status !== 'done').length;
+  $('countDone').textContent = state.items.filter((i) => i.status === 'done').length;
+  document.querySelectorAll('.view-tab').forEach((x) => x.classList.toggle('active', x.dataset.view === state.view));
+}
+
+function itemHtml(i) {
+  const cat = catOf(i);
+  const done = i.status === 'done';
+  return `<li class="item${done ? ' done' : ''}${i.pinned ? ' pinned' : ''}" data-id="${esc(i.id)}">
+    <button class="check" data-act="toggle" aria-label="${done ? 'Mark as not done' : 'Mark as done'}" title="${done ? 'Mark as not done' : 'Mark as done'}"><span>${ic('check')}</span></button>
+    <a class="body" href="${esc(safeHref(i.url))}" target="_blank" rel="noopener noreferrer">
+      <span class="title">${esc(i.title || i.url)}</span>
+      ${i.note ? `<span class="note">${esc(i.note)}</span>` : ''}
+      <span class="meta">
+        ${i.favicon ? `<img src="${esc(i.favicon)}" alt="" loading="lazy" referrerpolicy="no-referrer" />` : ''}
+        <span class="domain">${esc(i.domain || getDomain(i.url))}</span>
+        <span aria-hidden="true">·</span>
+        <span class="when">${esc(timeAgo(i.createdAt))}</span>
+        ${state.filter === 'all' ? `<span class="tag">${esc(cat.emoji)} ${esc(cat.name)}</span>` : ''}
+      </span>
+    </a>
+    <div class="tools">
+      <button class="tool hover-only pin-tool${i.pinned ? ' on' : ''}" data-act="pin" aria-label="${i.pinned ? 'Unpin' : 'Pin to top'}" title="${i.pinned ? 'Unpin' : 'Pin to top'}">${ic('pin')}</button>
+      <button class="tool hover-only" data-act="copy" aria-label="Copy link" title="Copy link">${ic('copy')}</button>
+      <button class="tool" data-act="more" aria-label="More actions" title="More">${ic('more')}</button>
+    </div>
+  </li>`;
 }
 
 function renderList() {
   const items = visibleItems();
-  $('list').innerHTML = items
-    .map((i) => {
-      const cat = catOf(i);
-      return `<li class="item${i.status === 'done' ? ' done' : ''}${i.pinned ? ' pinned' : ''}" data-id="${esc(i.id)}">
-        <button class="check" data-act="toggle" aria-label="${i.status === 'done' ? 'Mark as not done' : 'Mark as done'}"><span>✓</span></button>
-        <a class="body" href="${esc(safeHref(i.url))}" target="_blank" rel="noopener noreferrer">
-          <div class="meta">
-            ${i.favicon ? `<img src="${esc(i.favicon)}" alt="" loading="lazy" />` : ''}
-            <span class="domain">${esc(i.domain || getDomain(i.url))}</span>
-            <span>· ${esc(timeAgo(i.createdAt))}</span>
-            ${state.filter === 'all' ? `<span class="tag">${esc(cat.emoji)} ${esc(cat.name)}</span>` : ''}
-            ${i.pinned ? '<span title="Pinned">📌</span>' : ''}
-          </div>
-          <div class="title">${esc(i.title || i.url)}</div>
-          ${i.note ? `<div class="note">${esc(i.note)}</div>` : ''}
-        </a>
-        <button class="more" data-act="more" aria-label="More actions">⋯</button>
-      </li>`;
-    })
+  const searching = Boolean(state.q.trim());
+
+  // Group: Pinned first, then by day (only when not searching).
+  const groups = [];
+  const push = (label, icon, item) => {
+    let g = groups.at(-1);
+    if (!g || g.label !== label) groups.push((g = { label, icon, items: [] }));
+    g.items.push(item);
+  };
+  for (const i of items) {
+    if (searching) push(`${plural(items.length, 'result')}`, 'search', i);
+    else if (i.pinned) push('Pinned', 'pin', i);
+    else push(dateGroup(i.createdAt), '', i);
+  }
+
+  $('list').innerHTML = groups
+    .map((g) => `<section class="group"><h3 class="group-label">${g.icon ? ic(g.icon) : ''}${esc(g.label)}</h3><ul class="list">${g.items.map(itemHtml).join('')}</ul></section>`)
     .join('');
+
+  const cat = state.filter === 'all' ? null : state.categories.find((c) => c.id === state.filter) || UNCATEGORIZED;
+  $('listHeading').textContent = cat ? `${cat.emoji} ${cat.name}` : state.view === 'done' ? 'Done' : 'To check';
+  const today = items.filter((i) => dateGroup(i.createdAt) === 'Today').length;
+  $('listSub').textContent = `${plural(items.length, 'link')}${state.view !== 'done' && today ? ` · ${today} saved today` : ''}`;
 
   const empty = $('empty');
   empty.hidden = items.length > 0;
   if (!items.length) {
-    empty.innerHTML = state.q
-      ? `<div class="big">🔍</div><p>Nothing matches “${esc(state.q)}”.</p>`
+    const art = (name) => `<div class="empty-art">${ic(name)}</div>`;
+    empty.innerHTML = searching
+      ? `${art('search')}<strong>No matches</strong><p>Nothing matches “${esc(state.q)}”. Try a site name or a word from your note.</p>`
       : state.view === 'done'
-        ? `<div class="big">🎉</div><p>Nothing marked done yet.</p>`
-        : `<div class="big">🔖</div><p><strong>Nothing to check yet.</strong></p>
-           <p class="small">Tap <strong>+</strong> to paste a link, share from any app on your phone, or use the Chrome extension.</p>`;
+        ? `${art('done')}<strong>Nothing done yet</strong><p>Tick the circle next to a link once you've checked it. It moves here.</p>`
+        : state.filter !== 'all'
+          ? `${art('inbox')}<strong>All clear in this category</strong><p>Links you save to it will show up here.</p>`
+          : `${art('inbox')}<strong>Nothing to check yet</strong>
+             <p>Save a link here, share one from any app on your phone, or use the Chrome extension.</p>
+             <button class="btn primary" data-act="add">${ic('plus')}Save your first link</button>`;
   }
 }
 
@@ -264,47 +357,66 @@ const findItem = (id) => state.items.find((i) => i.id === id);
 
 // Writes are not awaited: Firestore applies them locally at once (works offline)
 // and syncs in the background. We only surface failures.
-const fail = (e) => toast(friendly(e));
-
 function toggleDone(item) {
   const status = item.status === 'done' ? 'unread' : 'done';
   db.updateItem(state.session.code, item.id, { status }).catch(fail);
   if (status === 'done') {
-    toast('Marked as done', { label: 'Undo', run: () => db.updateItem(state.session.code, item.id, { status: 'unread' }).catch(fail) });
+    toast('Marked as done', { action: { label: 'Undo', run: () => db.updateItem(state.session.code, item.id, { status: 'unread' }).catch(fail) } });
+  } else {
+    toast('Moved back to To check');
   }
+}
+
+function togglePin(item) {
+  db.updateItem(state.session.code, item.id, { pinned: !item.pinned }).catch(fail);
+  toast(item.pinned ? 'Unpinned' : 'Pinned to top');
 }
 
 function removeItem(item) {
   db.deleteItem(state.session.code, item.id).catch(fail);
-  toast('Deleted', { label: 'Undo', run: () => db.restoreItem(state.session.code, item).catch(fail) });
+  toast('Link deleted', { action: { label: 'Undo', run: () => db.restoreItem(state.session.code, item).catch(fail) } });
+}
+
+function sheetButton(className, html, run, dialog) {
+  const b = document.createElement('button');
+  b.className = className;
+  b.innerHTML = html;
+  b.addEventListener('click', () => {
+    dialog.close();
+    Promise.resolve(run()).catch(fail);
+  });
+  return b;
 }
 
 function openItem(item) {
   const d = $('itemDialog');
   $('itemTitle').textContent = item.title || item.url;
-  $('itemMeta').textContent = `${item.domain || getDomain(item.url)} · saved ${timeAgo(item.createdAt)} from ${item.source || 'web'}`;
+  $('itemFav').src = item.favicon || faviconFor(item.url);
+  const source = { extension: 'Chrome', share: 'phone share', import: 'import', web: 'web' }[item.source] || 'web';
+  $('itemMeta').textContent = `${item.domain || getDomain(item.url)} · saved ${timeAgo(item.createdAt)} from ${source}`;
+  $('itemNote').hidden = !item.note;
+  $('itemNote').textContent = item.note || '';
 
-  const actions = [
-    ['🔗 Open', () => window.open(safeHref(item.url), '_blank', 'noopener')],
-    navigator.share && ['📤 Share', () => navigator.share({ title: item.title, url: item.url }).catch(() => {})],
-    ['📋 Copy link', () => copy(item.url)],
-    [item.pinned ? '📌 Unpin' : '📌 Pin to top', () => db.updateItem(state.session.code, item.id, { pinned: !item.pinned })],
-    [item.status === 'done' ? '↩️ Mark not done' : '✅ Mark done', () => toggleDone(item)],
-    ['✏️ Edit', () => openAdd(item, item.id)],
-    ['🗑️ Delete', () => removeItem(item), 'danger'],
+  const done = item.status === 'done';
+  const quick = [
+    ['open', 'Open', () => window.open(safeHref(item.url), '_blank', 'noopener')],
+    navigator.share
+      ? ['share', 'Share', () => navigator.share({ title: item.title, url: item.url }).catch(() => {})]
+      : ['copy', 'Copy', () => copy(item.url)],
+    ['pin', item.pinned ? 'Unpin' : 'Pin', () => togglePin(item), item.pinned],
+    [done ? 'undo' : 'done', done ? 'Not done' : 'Done', () => toggleDone(item)],
+  ];
+  $('itemQuick').replaceChildren(
+    ...quick.map(([icon, label, run, on]) => sheetButton(`quick-btn${on ? ' on' : ''}`, `${ic(icon)}<span>${label}</span>`, run, d)),
+  );
+
+  const rows = [
+    ['edit', 'Edit title, link or note', () => openAdd(item, item.id)],
+    navigator.share && ['copy', 'Copy link', () => copy(item.url)],
+    ['trash', 'Delete', () => removeItem(item), 'danger'],
   ].filter(Boolean);
-
-  $('itemActions').replaceChildren(
-    ...actions.map(([label, run, cls]) => {
-      const b = document.createElement('button');
-      b.className = `btn ${cls || ''}`;
-      b.textContent = label;
-      b.addEventListener('click', () => {
-        d.close();
-        Promise.resolve(run()).catch((e) => toast(friendly(e)));
-      });
-      return b;
-    }),
+  $('itemMenu').replaceChildren(
+    ...rows.map(([icon, label, run, cls]) => sheetButton(`menu-row ${cls || ''}`, `${ic(icon)}<span>${esc(label)}</span>`, run, d)),
   );
 
   $('itemCats').replaceChildren(
@@ -326,7 +438,7 @@ function openItem(item) {
 }
 
 // ---------- Add / edit sheet ----------
-let addState = { editId: null, category: null, categoryTouched: false };
+let addState = { editId: null, category: null, categoryTouched: false, source: 'web' };
 
 function renderAddCats() {
   $('addCats').replaceChildren(
@@ -356,17 +468,18 @@ function onAddUrlChange() {
   const clean = isSavableUrl(url) ? cleanUrl(url) : null;
   const dup = clean && state.items.find((i) => i.url === clean && i.id !== addState.editId);
   $('addDup').hidden = !dup;
-  if (dup) $('addDup').textContent = `You saved this ${timeAgo(dup.createdAt)}${dup.status === 'done' ? ' and marked it done' : ''}.`;
+  if (dup) $('addDup').textContent = `You already saved this ${timeAgo(dup.createdAt)}${dup.status === 'done' ? ' and marked it done' : ''}. Saving again adds a second copy.`;
 }
 
-function openAdd(prefill = {}, editId = null) {
+function openAdd(prefill = {}, editId = null, source = 'web') {
   addState = {
     editId,
+    source,
     category: prefill.category || suggestCategory(prefill.url || '', state.categories),
     categoryTouched: Boolean(editId),
   };
   $('addTitle').textContent = editId ? 'Edit link' : 'Save a link';
-  $('addSubmit').textContent = editId ? 'Save changes' : 'Save';
+  $('addSubmit').textContent = editId ? 'Save changes' : 'Save link';
   $('addUrl').value = prefill.url || '';
   $('addTitleInput').value = prefill.title || '';
   $('addNote').value = prefill.note || '';
@@ -383,7 +496,7 @@ function submitAdd(e) {
   let url = $('addUrl').value.trim();
   if (url && !/^https?:\/\//i.test(url) && /^[\w-]+(\.[\w-]+)+/.test(url)) url = `https://${url}`;
   if (!isSavableUrl(url)) {
-    $('addError').textContent = 'Please enter a valid link (starting with http:// or https://).';
+    $('addError').textContent = 'Please enter a valid link, starting with http:// or https://.';
     $('addError').hidden = false;
     return;
   }
@@ -392,7 +505,7 @@ function submitAdd(e) {
     title: $('addTitleInput').value.trim(),
     note: $('addNote').value.trim(),
     category: addState.category,
-    source: addState.editId ? undefined : sharedFromPhone ? 'share' : 'web',
+    source: addState.source,
   };
   $('addDialog').close();
   if (addState.editId) {
@@ -405,33 +518,33 @@ function submitAdd(e) {
       domain: getDomain(clean),
       favicon: faviconFor(clean),
     }).catch(fail);
-    toast('Updated');
+    toast('Changes saved');
   } else {
     db.addItem(state.session.code, fields).catch(fail);
     const cat = state.categories.find((c) => c.id === fields.category);
-    toast(`Saved to ${cat ? cat.name : 'CheckLater'}${navigator.onLine ? '' : ' (will sync when online)'}`);
+    toast(`Saved to ${cat ? cat.name : 'CheckLater'}${navigator.onLine ? '' : '. It will sync when you’re online'}`);
   }
-  sharedFromPhone = false;
 }
-
-let sharedFromPhone = false;
 
 // ---------- Account sheet ----------
 async function renderAccount() {
   const { code, username } = state.session;
   $('accName').textContent = `Hi, ${username}`;
+  $('accAvatar').textContent = (username || '?').charAt(0).toUpperCase();
   $('accCode').textContent = code;
-  $('accQr').src = await QRCode.toDataURL(`${location.origin}/?code=${code}`, { margin: 1, width: 264 });
+  $('accQr').src = await QRCode.toDataURL(`${location.origin}/?code=${code}`, { margin: 1, width: 240 });
+  renderThemeSeg();
 
   $('catList').replaceChildren(
     ...state.categories.map((c) => {
       const li = document.createElement('li');
       const n = state.items.filter((i) => i.category === c.id).length;
-      li.innerHTML = `<span>${esc(c.emoji)}</span><span class="grow">${esc(c.name)}</span><span class="muted small">${n}</span>`;
+      li.innerHTML = `<span class="emoji">${esc(c.emoji)}</span><span class="grow">${esc(c.name)}</span><span class="muted small">${n}</span>`;
       const del = document.createElement('button');
       del.className = 'icon-btn';
-      del.textContent = '✕';
+      del.innerHTML = ic('trash');
       del.setAttribute('aria-label', `Delete ${c.name}`);
+      del.title = `Delete ${c.name}`;
       del.disabled = state.categories.length <= 1;
       del.addEventListener('click', () => deleteCategory(c));
       li.append(del);
@@ -445,6 +558,7 @@ async function addCategory(e) {
   e.preventDefault();
   const name = $('catName').value.trim().slice(0, 30);
   if (!name) return;
+  if (state.categories.length >= 50) return toast('You can have up to 50 categories.', { error: true });
   let id = slugify(name);
   while (state.categories.some((c) => c.id === id)) id = `${id}-${Math.floor(Math.random() * 1000)}`;
   const emoji = $('catEmoji').value.trim() || '🏷️';
@@ -452,8 +566,9 @@ async function addCategory(e) {
     await db.setCategories(state.session.code, [...state.categories, { id, name, emoji }]);
     $('catName').value = '';
     $('catEmoji').value = '';
+    toast(`Added ${name}`);
   } catch (err) {
-    toast(friendly(err));
+    fail(err);
   }
 }
 
@@ -462,19 +577,21 @@ async function deleteCategory(cat) {
   const target = rest.find((c) => c.id === 'other') || rest[0];
   const affected = state.items.filter((i) => i.category === cat.id).map((i) => i.id);
   const msg = affected.length
-    ? `Delete “${cat.name}”? Its ${affected.length} link(s) will move to ${target.name}.`
+    ? `Delete “${cat.name}”? Its ${plural(affected.length, 'link')} will move to ${target.name}.`
     : `Delete “${cat.name}”?`;
   if (!confirm(msg)) return;
   try {
     if (affected.length) await db.moveItems(state.session.code, affected, target.id);
     await db.setCategories(state.session.code, rest);
   } catch (err) {
-    toast(friendly(err));
+    fail(err);
   }
 }
 
 function exportJson() {
   const data = {
+    app: 'checklater',
+    version: 1,
     exportedAt: new Date().toISOString(),
     username: state.session.username,
     categories: state.categories,
@@ -485,23 +602,54 @@ function exportJson() {
   a.download = `checklater-${new Date().toISOString().slice(0, 10)}.json`;
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  toast(`Exported ${plural(state.items.length, 'link')}`);
 }
 
-async function copy(text) {
+async function importJson(file) {
+  try {
+    if (file.size > 10 * 1024 * 1024) throw new Error('That file is too big (over 10 MB).');
+    const data = JSON.parse(await file.text());
+    const raw = Array.isArray(data) ? data : data?.items;
+    if (!Array.isArray(raw)) throw new Error('That doesn’t look like a CheckLater export.');
+    const have = new Set(state.items.map((i) => i.url));
+    const fresh = [];
+    for (const r of raw.slice(0, 5000)) {
+      const item = sanitizeImported(r, state.categories);
+      if (item && !have.has(item.url)) {
+        have.add(item.url);
+        fresh.push(item);
+      }
+    }
+    const skipped = raw.length - fresh.length;
+    if (!fresh.length) return toast(`Nothing new to import${skipped ? ` (${skipped} already saved or invalid)` : ''}.`);
+    await db.importItems(state.session.code, fresh);
+    toast(`Imported ${plural(fresh.length, 'link')}${skipped ? `, skipped ${skipped}` : ''}`);
+  } catch (err) {
+    toast(err instanceof SyntaxError ? 'That file isn’t valid JSON.' : friendly(err), { error: true });
+  }
+}
+
+async function copy(text, done = 'Link copied') {
   try {
     await navigator.clipboard.writeText(text);
-    toast('Copied');
+    toast(done, { action: null });
   } catch {
     prompt('Copy this:', text);
   }
 }
 
 function signOut() {
+  if (DEMO) return (location.href = '/');
   if (!confirm('Sign out of this device? Your links stay saved under your code.')) return;
   state.unsubs.forEach((u) => u());
   state.unsubs = [];
   localStorage.removeItem(SESSION_KEY);
   location.reload();
+}
+
+function openAccount() {
+  renderAccount();
+  $('accountDialog').showModal();
 }
 
 // ---------- PWA install ----------
@@ -514,18 +662,15 @@ window.addEventListener('beforeinstallprompt', (e) => {
 // ---------- Wire up ----------
 function wire() {
   $('fab').addEventListener('click', () => openAdd());
-  $('accountBtn').addEventListener('click', () => {
-    renderAccount();
-    $('accountDialog').showModal();
-  });
+  $('addBtn').addEventListener('click', () => openAdd());
+  $('accountBtn').addEventListener('click', openAccount);
   $('searchInput').addEventListener('input', (e) => {
     state.q = e.target.value;
     renderList();
   });
-  document.querySelectorAll('.toolbar .seg').forEach((b) =>
+  document.querySelectorAll('.view-tab').forEach((b) =>
     b.addEventListener('click', () => {
       state.view = b.dataset.view;
-      document.querySelectorAll('.toolbar .seg').forEach((x) => x.classList.toggle('active', x === b));
       render();
     }),
   );
@@ -535,32 +680,47 @@ function wire() {
     state.filter = chip.dataset.filter;
     render();
   });
+  $('empty').addEventListener('click', (e) => {
+    if (e.target.closest('[data-act="add"]')) openAdd();
+  });
   $('list').addEventListener('click', (e) => {
     const btn = e.target.closest('[data-act]');
     if (!btn) return;
     const item = findItem(btn.closest('.item').dataset.id);
     if (!item) return;
-    if (btn.dataset.act === 'toggle') toggleDone(item);
-    if (btn.dataset.act === 'more') openItem(item);
+    const act = btn.dataset.act;
+    if (act === 'toggle') toggleDone(item);
+    if (act === 'pin') togglePin(item);
+    if (act === 'copy') copy(item.url);
+    if (act === 'more') openItem(item);
   });
 
   $('addForm').addEventListener('submit', submitAdd);
   $('addUrl').addEventListener('input', onAddUrlChange);
+  $('addNote').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) $('addForm').requestSubmit();
+  });
   $('pasteBtn').addEventListener('click', async () => {
     try {
       const text = await navigator.clipboard.readText();
-      const link = extractUrl(text) || text.trim();
-      $('addUrl').value = link;
+      $('addUrl').value = extractUrl(text) || text.trim();
       onAddUrlChange();
     } catch {
-      toast('Clipboard access was blocked. Long-press the field to paste.');
+      toast('Clipboard access was blocked. Long-press the field to paste.', { error: true });
     }
   });
 
-  $('accCopy').addEventListener('click', () => copy(state.session.code));
+  $('accCopy').addEventListener('click', () => copy(state.session.code, 'Code copied'));
   $('catForm').addEventListener('submit', addCategory);
   $('exportBtn').addEventListener('click', exportJson);
+  $('importBtn').addEventListener('click', () => $('importFile').click());
+  $('importFile').addEventListener('change', (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (file) importJson(file);
+  });
   $('signOutBtn').addEventListener('click', signOut);
+  document.querySelectorAll('[data-theme-opt]').forEach((b) => b.addEventListener('click', () => setTheme(b.dataset.themeOpt)));
   $('installBtn').addEventListener('click', async () => {
     if (!installPrompt) return;
     installPrompt.prompt();
@@ -577,19 +737,55 @@ function wire() {
     });
   });
 
-  window.addEventListener('online', render);
-  window.addEventListener('offline', render);
+  // Keyboard shortcuts: "/" search, "n" new link.
+  document.addEventListener('keydown', (e) => {
+    if ($('viewApp').hidden || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (document.querySelector('dialog[open]') || /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+    if (e.key === '/') {
+      e.preventDefault();
+      $('searchInput').focus();
+    } else if (e.key === 'n' || e.key === 'N') {
+      e.preventDefault();
+      openAdd();
+    }
+  });
+  $('searchInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      e.target.value = '';
+      state.q = '';
+      renderList();
+      e.target.blur();
+    }
+  });
+
+  window.addEventListener('online', () => renderSync());
+  window.addEventListener('offline', () => renderSync());
+}
+
+// Demo screenshots: open a specific screen once the sample data has rendered.
+function openDemoScreen() {
+  const first = () => visibleItems()[0];
+  const screens = {
+    add: () => openAdd({ url: 'https://www.youtube.com/watch?v=aircAruvnKk', title: 'But what is a neural network?', note: 'Watch before the ML meetup' }),
+    item: () => openItem(state.items.find((i) => i.note && i.status !== 'done') || first()),
+    account: openAccount,
+    done: () => { state.view = 'done'; render(); },
+    search: () => { $('searchInput').value = state.q = 'read'; renderList(); },
+    watch: () => { state.filter = 'watch'; render(); },
+  };
+  setTimeout(() => screens[DEMO_SCREEN]?.(), 50);
 }
 
 // ---------- Boot ----------
 (async function boot() {
-  if ('serviceWorker' in navigator && import.meta.env.PROD) {
+  $('appVersion').textContent = `CheckLater v${__APP_VERSION__}`;
+  if ('serviceWorker' in navigator && import.meta.env.PROD && !DEMO) {
     navigator.serviceWorker.register('/sw.js').catch(() => {});
   }
-  if (!isConfigured()) return show('viewSetup');
+  if (!DEMO && !isConfigured()) return show('viewSetup');
 
-  const pendingCode = captureIncoming();
-  sharedFromPhone = Boolean(sessionStorage.getItem(PENDING_SHARE_KEY));
+  db = DEMO ? await import('./demo-db.js') : await import('./db.js');
+  const pendingCode = DEMO ? null : captureIncoming();
   wire();
   initWelcome();
 
@@ -600,6 +796,14 @@ function wire() {
     return setAuthError(friendly(e));
   }
 
+  if (DEMO) {
+    if (DEMO_SCREEN === 'welcome') return show('viewWelcome');
+    if (DEMO_SCREEN === 'signup') { show('viewWelcome'); return selectAuthTab('signup'); }
+    saveSession({ code: db.DEMO_CODE, username: 'Alex' });
+    await enterApp();
+    return openDemoScreen();
+  }
+
   const session = loadSession();
   if (pendingCode && pendingCode !== session?.code) {
     show('viewWelcome');
@@ -608,5 +812,5 @@ function wire() {
   }
   if (session) return enterApp();
   show('viewWelcome');
-  if (sharedFromPhone) setAuthError('Sign in first. Your shared link will be saved right after.');
+  if (sessionStorage.getItem(PENDING_SHARE_KEY)) setAuthError('Sign in first. Your shared link will be saved right after.');
 })();
