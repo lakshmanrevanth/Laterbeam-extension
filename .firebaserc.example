@@ -5,7 +5,8 @@
   "targets": {
     "your-project-id": {
       "hosting": {
-        "app": ["your-project-id"]
+        "app": ["your-project-id"],
+        "legacy": ["your-second-site-id"]
       }
     }
   }
