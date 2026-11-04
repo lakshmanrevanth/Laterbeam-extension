@@ -30,7 +30,7 @@
     "deploy": "npm run build && firebase deploy"
   },
   "dependencies": {
-    "firebase": "^13.0.0",
+    "firebase": "^13.1.0",
     "qrcode": "^1.5.4"
   },
   "devDependencies": {
