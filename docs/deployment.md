@@ -54,7 +54,10 @@ firebase login
 cp .firebaserc.example .firebaserc   # then replace your-project-id (3 places)
 ```
 
-`.firebaserc` is gitignored. `firebase.json` deploys hosting to the target `app`, and `.firebaserc` maps that target to one or more hosting sites. To serve the app from a second address too (for example `my-name.web.app`), create the site with `firebase hosting:sites:create my-name` and add it to the `app` list.
+`.firebaserc` is gitignored. `firebase.json` has two hosting entries with the same settings: target `app` (the main address) and target `legacy` (a second address that serves the same app; the official deployment uses it to keep the old `checklater-ea1ba.web.app` URL working). Firebase allows one site per target.
+
+- **One address:** delete the `legacy` entry from `firebase.json` and from `.firebaserc`.
+- **Two addresses:** create the second site with `firebase hosting:sites:create <site-id>` and put its id in place of `your-second-site-id`.
 
 ## 6. Deploy
 

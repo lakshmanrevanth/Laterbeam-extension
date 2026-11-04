@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Changed
 - **Renamed CheckLater to Laterbeam**, with a new logo (bookmark with an upward beam on a violet-to-sky gradient) and tagline "Beam it now. Open it later." Saved sessions, theme and older JSON exports keep working.
 - Release zip is now `laterbeam-extension-v<version>.zip`.
-- The web app now lives at <https://laterbeam.web.app>. The old address keeps working, and one deploy updates both (hosting target `app`).
+- The web app now lives at <https://laterbeam.web.app>. The old address keeps working, and one deploy updates both (hosting targets `app` and `legacy`).
 
 ### Added
 - Developer credit (Lakshman Revanth Reddy, GitHub and portfolio links) in the web app, extension popup, privacy page and README.
