@@ -22,7 +22,7 @@ You can expect an acknowledgement within a few days. Once a fix is ready we'll p
 
 ## Security model
 
-CheckLater has no passwords. Access to a space is controlled by its code.
+Laterbeam has no passwords. Access to a space is controlled by its code.
 
 - **The code is a bearer secret.** A space code like `K7QM-2HXP-9WAD` is 12 characters from a 32-character alphabet, so about 60 bits of randomness, generated with `crypto.getRandomValues`. Anyone who has the code can read and edit that space, exactly like a password.
 - **Anonymous Firebase Auth per device.** Every client signs in anonymously before talking to Firestore, so unauthenticated raw traffic is rejected. The anonymous identity is not tied to a space; the code is.

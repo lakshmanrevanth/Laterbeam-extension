@@ -1,6 +1,6 @@
-# Deploying CheckLater
+# Deploying Laterbeam
 
-This guide sets up your own CheckLater: a Firebase project for the backend and hosting, the web app, and optionally the Chrome Web Store listing. It takes about 15 minutes. The free Firebase **Spark** plan is enough for personal use.
+This guide sets up your own Laterbeam: a Firebase project for the backend and hosting, the web app, and optionally the Chrome Web Store listing. It takes about 15 minutes. The free Firebase **Spark** plan is enough for personal use.
 
 Requirements: Node.js 22+, a Google account, and the repository cloned with `npm install` done.
 
@@ -8,7 +8,7 @@ Requirements: Node.js 22+, a Google account, and the repository cloned with `npm
 
 1. Go to <https://console.firebase.google.com> and click **Create a project**.
 2. Pick a name. The project id becomes your default URL: `https://<project-id>.web.app`.
-3. Google Analytics is not used by CheckLater; you can turn it off.
+3. Google Analytics is not used by Laterbeam; you can turn it off.
 
 ## 2. Enable Anonymous sign-in
 
@@ -92,7 +92,7 @@ The API key is public, so without App Check anyone can call your Firestore and A
    ```bash
    npm run package
    ```
-   This creates `release/checklater-extension-v<version>.zip`, with the manifest version taken from `package.json`.
+   This creates `release/laterbeam-extension-v<version>.zip`, with the manifest version taken from `package.json`.
 2. Sign in to the [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole) and pay the one-time **$5** registration fee if you haven't already.
 3. **New item →** upload the zip.
 4. Fill in the listing from [chrome-web-store.md](chrome-web-store.md): description, category, screenshots from `docs/screenshots/`, single purpose, permission justifications, and data-usage answers.
@@ -103,7 +103,7 @@ Until it's published, anyone can load `extension/` unpacked (after `npm run sync
 
 ## 10. Install on phones
 
-- **Android (Chrome):** open your URL, then **⋮ → Install app** (or **Add to Home screen**). CheckLater then shows up in the **Share** menu of other apps.
+- **Android (Chrome):** open your URL, then **⋮ → Install app** (or **Add to Home screen**). Laterbeam then shows up in the **Share** menu of other apps.
 - **iPhone/iPad (Safari):** **Share → Add to Home Screen**. iOS doesn't let web apps receive shares, so use **+** and **Paste**.
 - **Linking a device:** on a signed-in device, open the account sheet and scan its QR code, or type the code.
 

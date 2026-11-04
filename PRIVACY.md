@@ -1,14 +1,14 @@
-# CheckLater Privacy Policy
+# Laterbeam Privacy Policy
 
 **Effective date:** 3 November 2026
 
-This policy covers the CheckLater web app (hosted at <https://checklater-ea1ba.web.app>) and the CheckLater Chrome extension. CheckLater is an open-source project; you can read all of its code at <https://github.com/lakshmanrevanth/check-later-extension>.
+This policy covers the Laterbeam web app (hosted at <https://checklater-ea1ba.web.app>) and the Laterbeam Chrome extension. Laterbeam is an open-source project; you can read all of its code at <https://github.com/lakshmanrevanth/check-later-extension>.
 
-If you run your own copy of CheckLater on your own Firebase project, you are the operator of that copy and this policy doesn't cover it.
+If you run your own copy of Laterbeam on your own Firebase project, you are the operator of that copy and this policy doesn't cover it.
 
 ## In short
 
-- CheckLater stores only the links **you choose to save**, plus the name you sign up with.
+- Laterbeam stores only the links **you choose to save**, plus the name you sign up with.
 - It does **not** collect your browsing history, has **no analytics**, shows **no ads**, and does **not sell or share** your data.
 - Data is stored in Google Firebase (Cloud Firestore).
 
@@ -36,11 +36,11 @@ For each link you save:
 
 ## Where it's stored
 
-All of this is stored in **Google Cloud Firestore**, part of Google Firebase, in the project that runs CheckLater. Google processes the data as our infrastructure provider and, like any web service, receives standard request information such as your IP address. See [Firebase's privacy and security information](https://firebase.google.com/support/privacy).
+All of this is stored in **Google Cloud Firestore**, part of Google Firebase, in the project that runs Laterbeam. Google processes the data as our infrastructure provider and, like any web service, receives standard request information such as your IP address. See [Firebase's privacy and security information](https://firebase.google.com/support/privacy).
 
 Each device signs in with **Firebase Anonymous Authentication**, which creates a random user identifier for that device. It isn't linked to your name, email or Google account. Your space is identified by its code, not by this identifier.
 
-On your devices, CheckLater keeps:
+On your devices, Laterbeam keeps:
 
 - **Web app:** your code and name in the browser's local storage, and an offline copy of your links in the browser's storage (Firestore offline cache), plus your theme choice.
 - **Extension:** your code, name, categories and Firebase sign-in tokens in `chrome.storage.local`.
@@ -51,11 +51,11 @@ Anyone who has your **space code** can read and change the links in that space. 
 
 ## Favicons
 
-To show website icons, CheckLater loads them from Google's favicon service (`https://www.google.com/s2/favicons`). That request tells Google the **domain** of each saved link (not the full URL) when the icon is displayed. The extension popup does the same for the current page if Chrome doesn't provide an icon itself.
+To show website icons, Laterbeam loads them from Google's favicon service (`https://www.google.com/s2/favicons`). That request tells Google the **domain** of each saved link (not the full URL) when the icon is displayed. The extension popup does the same for the current page if Chrome doesn't provide an icon itself.
 
 ## What we don't do
 
-- No browsing history. CheckLater only stores pages you explicitly save.
+- No browsing history. Laterbeam only stores pages you explicitly save.
 - No analytics, tracking pixels or advertising.
 - No selling, renting or sharing of your data with third parties.
 - No use of your data for credit, lending or any purpose unrelated to saving links.
@@ -65,7 +65,7 @@ To show website icons, CheckLater loads them from Google's favicon service (`htt
 | Permission | Why it's needed |
 |---|---|
 | `activeTab` | Reads the current tab's URL and title, **only** when you click the toolbar button, use the right-click menu or press a keyboard shortcut. While the popup is open, it also checks your space for that URL to warn about duplicates. Nothing is saved unless you save it. |
-| `contextMenus` | Adds the **Send to CheckLater** right-click menu for pages, links, images, videos and selected text. |
+| `contextMenus` | Adds the **Send to Laterbeam** right-click menu for pages, links, images, videos and selected text. |
 | `storage` | Keeps your space code, name, categories and Firebase sign-in token on this computer, so you stay signed in. |
 | `https://firestore.googleapis.com/*` | Reads and writes your saved links in Cloud Firestore. |
 | `https://identitytoolkit.googleapis.com/*` | Creates the anonymous Firebase sign-in for this browser. |
@@ -81,7 +81,7 @@ The extension doesn't read page content, run on pages in the background, or load
 
 ## Children
 
-CheckLater isn't directed at children under 13, and we don't knowingly collect their data.
+Laterbeam isn't directed at children under 13, and we don't knowingly collect their data.
 
 ## Changes
 

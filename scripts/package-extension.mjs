@@ -1,4 +1,4 @@
-// Zips extension/ into release/checklater-extension-v<version>.zip for the Chrome Web Store.
+// Zips extension/ into release/laterbeam-extension-v<version>.zip for the Chrome Web Store.
 // The manifest version is taken from package.json so the two never drift. No dependencies.
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
@@ -73,6 +73,6 @@ end.writeUInt32LE(cenBuf.length, 12);
 end.writeUInt32LE(offset, 16);
 
 mkdirSync('release', { recursive: true });
-const out = `release/checklater-extension-v${version}.zip`;
+const out = `release/laterbeam-extension-v${version}.zip`;
 writeFileSync(out, Buffer.concat([...locals, cenBuf, end]));
 console.log(`wrote ${out} (${files.length} files)`);

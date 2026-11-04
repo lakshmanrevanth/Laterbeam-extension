@@ -1,10 +1,14 @@
 {
-  "name": "checklater",
+  "name": "laterbeam",
   "private": true,
   "version": "1.0.0",
   "type": "module",
   "description": "Save links from any browser or phone into one shared space, identified by a unique code.",
   "license": "MIT",
+  "author": {
+    "name": "Lakshman Revanth Reddy",
+    "url": "https://revv-folio.netlify.app/"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/lakshmanrevanth/check-later-extension.git"

@@ -1,4 +1,4 @@
-# Contributing to CheckLater
+# Contributing to Laterbeam
 
 Thanks for helping! Bug reports, fixes, docs and small features are all welcome. For anything large, open an issue first so we can agree on the approach before you write code.
 
@@ -47,7 +47,7 @@ See [docs/architecture.md](docs/architecture.md) for how the pieces fit together
 | `npm test` | Sync, then run unit tests |
 | `npm run sync` | Generate `shared/config.js` from `.env` and copy `shared/` into the extension |
 | `npm run icons` | Regenerate PNG icons |
-| `npm run package` | Zip `extension/` into `release/checklater-extension-v<version>.zip` (manifest version synced from `package.json`) |
+| `npm run package` | Zip `extension/` into `release/laterbeam-extension-v<version>.zip` (manifest version synced from `package.json`) |
 | `npm run screenshots` | Regenerate `docs/screenshots/*.png` from demo mode |
 | `npm run deploy` | Build and `firebase deploy` (hosting + rules) |
 

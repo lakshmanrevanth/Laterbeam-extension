@@ -1,13 +1,13 @@
 # Chrome Web Store listing
 
-Ready-to-paste text for the [Developer Dashboard](https://chrome.google.com/webstore/devconsole). Upload `release/checklater-extension-v<version>.zip` from `npm run package` (see [deployment.md](deployment.md#9-publish-the-chrome-extension)).
+Ready-to-paste text for the [Developer Dashboard](https://chrome.google.com/webstore/devconsole). Upload `release/laterbeam-extension-v<version>.zip` from `npm run package` (see [deployment.md](deployment.md#9-publish-the-chrome-extension)).
 
 ## Store listing
 
 **Name**
 
 ```
-CheckLater
+Laterbeam
 ```
 
 **Short description** (summary, ≤ 132 characters, currently 112)
@@ -19,16 +19,16 @@ Save any page or link in one click and open it later on your phone or any device
 **Detailed description**
 
 ```
-CheckLater is a simple "read it later" inbox for links. Save a page from Chrome, then open it later on your phone, tablet or another computer.
+Laterbeam is a simple "read it later" inbox for links. Save a page from Chrome, then open it later on your phone, tablet or another computer.
 
 HOW IT WORKS
 • Sign up with just a name and get a unique code like K7QM-2HXP-9WAD. No email or password.
-• Enter the same code in the CheckLater web app on your phone or other computers. All your links sync live.
+• Enter the same code in the Laterbeam web app on your phone or other computers. All your links sync live.
 • Install the web app on Android to save links from any app's Share menu: YouTube, Instagram, WhatsApp and more.
 
 SAVE FROM CHROME
 • Click the toolbar button to save the current page, with an editable title, note and category.
-• Right-click any page, link, image or selected text → Send to CheckLater → pick a category.
+• Right-click any page, link, image or selected text → Send to Laterbeam → pick a category.
 • Press Alt+Shift+D to quick-save the current page, or Alt+Shift+S to open the popup.
 • Get a warning if you've already saved a link. Tracking parameters like utm_ and fbclid are removed.
 
@@ -55,6 +55,8 @@ Your code works like a password: anyone who has it can see and edit your links, 
 
 **Support URL:** `https://github.com/lakshmanrevanth/check-later-extension/issues`
 
+**Developer:** Lakshman Revanth Reddy · GitHub `https://github.com/lakshmanrevanth` · Portfolio `https://revv-folio.netlify.app/`
+
 ### Screenshots
 
 Upload at 1280×800 (or 640×400), PNG or JPEG. Regenerate them with `npm run screenshots`, which uses demo mode, so no real data appears.
@@ -74,7 +76,7 @@ Optional promo tile: 440×280.
 ### Single purpose
 
 ```
-CheckLater saves the current page, or a link, image or selected text the user chooses, to the user's CheckLater list so they can open it later on any of their devices.
+Laterbeam saves the current page, or a link, image or selected text the user chooses, to the user's Laterbeam list so they can open it later on any of their devices.
 ```
 
 ### Permission justifications
@@ -82,25 +84,25 @@ CheckLater saves the current page, or a link, image or selected text the user ch
 **activeTab**
 
 ```
-Used only when the user clicks the toolbar button, chooses "Send to CheckLater" in the right-click menu, or presses the quick-save shortcut. It lets the extension read the current tab's URL and title so that page can be saved. While the popup is open, that URL is also looked up in the user's own list to warn about duplicates. The extension never reads page content and has no access to tabs the user hasn't acted on.
+Used only when the user clicks the toolbar button, chooses "Send to Laterbeam" in the right-click menu, or presses the quick-save shortcut. It lets the extension read the current tab's URL and title so that page can be saved. While the popup is open, that URL is also looked up in the user's own list to warn about duplicates. The extension never reads page content and has no access to tabs the user hasn't acted on.
 ```
 
 **contextMenus**
 
 ```
-Adds a "Send to CheckLater" right-click menu, with the user's categories, for pages, links, images, videos and selected text, so the user can save the item they right-clicked.
+Adds a "Send to Laterbeam" right-click menu, with the user's categories, for pages, links, images, videos and selected text, so the user can save the item they right-clicked.
 ```
 
 **storage**
 
 ```
-Stores the user's CheckLater space code, display name, category list and the anonymous Firebase sign-in token locally in chrome.storage.local, so the user stays signed in and the menus show their categories. Nothing else is stored.
+Stores the user's Laterbeam space code, display name, category list and the anonymous Firebase sign-in token locally in chrome.storage.local, so the user stays signed in and the menus show their categories. Nothing else is stored.
 ```
 
 **Host permission: https://firestore.googleapis.com/***
 
 ```
-Reads and writes the user's saved links in Google Cloud Firestore, CheckLater's database, through the Firestore REST API.
+Reads and writes the user's saved links in Google Cloud Firestore, Laterbeam's database, through the Firestore REST API.
 ```
 
 **Host permission: https://identitytoolkit.googleapis.com/***
@@ -164,5 +166,5 @@ https://checklater-ea1ba.web.app/privacy
 ## Reviewer notes (optional "test instructions" field)
 
 ```
-No login credentials are needed. Click the toolbar icon → "New here", enter any name, click "Create my code" and "I saved it. Continue", then click "Save to CheckLater". Open https://checklater-ea1ba.web.app and enter the same code to see saved links.
+No login credentials are needed. Click the toolbar icon → "New here", enter any name, click "Create my code" and "I saved it. Continue", then click "Save to Laterbeam". Open https://checklater-ea1ba.web.app and enter the same code to see saved links.
 ```

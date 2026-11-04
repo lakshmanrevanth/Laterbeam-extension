@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "CheckLater",
-  "short_name": "CheckLater",
+  "name": "Laterbeam",
+  "short_name": "Laterbeam",
   "version": "1.0.0",
   "description": "Save any page, link, image or selection in one click and open it later on your phone or any device. No passwords.",
   "homepage_url": "https://github.com/lakshmanrevanth/check-later-extension",
@@ -21,7 +21,7 @@
     "type": "module"
   },
   "action": {
-    "default_title": "Send to CheckLater",
+    "default_title": "Send to Laterbeam",
     "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon16.png",
@@ -41,7 +41,7 @@
       "suggested_key": {
         "default": "Alt+Shift+S"
       },
-      "description": "Open CheckLater"
+      "description": "Open Laterbeam"
     },
     "quick-save": {
       "suggested_key": {

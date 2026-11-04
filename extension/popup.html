@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>CheckLater</title>
+  <title>Laterbeam</title>
   <link rel="stylesheet" href="popup.css" />
 </head>
 <body>
@@ -17,7 +17,7 @@
 
   <header class="top">
     <img src="icons/icon32.png" alt="" width="24" height="24" />
-    <strong>CheckLater</strong>
+    <strong>Laterbeam</strong>
     <button id="codeChip" class="code-chip" hidden title="Your code. Click to copy.">
       <svg class="ic"><use href="#i-key"/></svg><span id="codeChipText"></span>
     </button>
@@ -33,7 +33,7 @@
   <section id="viewAuth" class="view" hidden>
     <div class="intro">
       <h2>Save any page. Open it anywhere.</h2>
-      <p class="muted small">Link this browser to your CheckLater space with your code.</p>
+      <p class="muted small">Link this browser to your Laterbeam space with your code.</p>
     </div>
     <div class="tabs" role="tablist">
       <button class="tab active" data-tab="signin" role="tab">I have a code</button>
@@ -41,7 +41,7 @@
     </div>
 
     <form id="formSignin" class="stack">
-      <label for="codeInput">Your CheckLater code</label>
+      <label for="codeInput">Your Laterbeam code</label>
       <input id="codeInput" placeholder="XXXX-XXXX-XXXX" autocomplete="off" spellcheck="false" maxlength="16" class="code-input" />
       <button class="primary" type="submit">Link this browser</button>
       <p class="muted small">Use the same code on every device to see the same saved links.</p>
@@ -76,7 +76,7 @@
     <div class="field-label">Category <span id="smartTag" class="smart" hidden>Smart pick</span></div>
     <div id="categories" class="cats" role="radiogroup" aria-label="Category"></div>
     <textarea id="noteInput" rows="2" maxlength="2000" placeholder="Add a note (optional)"></textarea>
-    <button id="saveBtn" class="primary save"><svg class="ic"><use href="#i-check"/></svg><span id="saveLabel">Save to CheckLater</span><kbd>Ctrl ⏎</kbd></button>
+    <button id="saveBtn" class="primary save"><svg class="ic"><use href="#i-check"/></svg><span id="saveLabel">Save to Laterbeam</span><kbd>Ctrl ⏎</kbd></button>
     <p id="saveError" class="error" hidden></p>
 
     <div id="recentWrap" hidden>
@@ -96,6 +96,8 @@
     <p id="savedMsg" class="saved-title">Saved</p>
     <p class="muted small">It's on every device linked to your code.</p>
   </section>
+
+  <p class="credit muted small">by <a href="https://github.com/lakshmanrevanth" target="_blank" rel="noopener">Lakshman Revanth Reddy</a> · <a href="https://revv-folio.netlify.app/" target="_blank" rel="noopener">Portfolio</a></p>
 
   <script type="module" src="popup.js"></script>
 </body>

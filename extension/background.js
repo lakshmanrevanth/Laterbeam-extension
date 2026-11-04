@@ -11,7 +11,7 @@ async function rebuildMenus() {
   const session = await getSession();
   const contexts = ['page', 'link', 'selection', 'image', 'video'];
 
-  chrome.contextMenus.create({ id: ROOT, title: 'Send to CheckLater', contexts });
+  chrome.contextMenus.create({ id: ROOT, title: 'Send to Laterbeam', contexts });
   if (!session) {
     chrome.contextMenus.create({ id: 'signin', parentId: ROOT, title: 'Sign in first…', contexts });
     return;
@@ -39,7 +39,7 @@ function flash(text, color, title) {
   if (title) chrome.action.setTitle({ title });
   setTimeout(() => {
     chrome.action.setBadgeText({ text: '' });
-    chrome.action.setTitle({ title: 'Send to CheckLater' });
+    chrome.action.setTitle({ title: 'Send to Laterbeam' });
   }, 3000);
 }
 
@@ -48,7 +48,7 @@ const openPopup = () => chrome.action.openPopup?.()?.catch(() => {});
 async function save({ url, title, note, categoryId }) {
   const session = await getSession();
   if (!session) {
-    flash('!', '#d93025', 'Open CheckLater and sign in first');
+    flash('!', '#d93025', 'Open Laterbeam and sign in first');
     openPopup();
     return;
   }
@@ -60,7 +60,7 @@ async function save({ url, title, note, categoryId }) {
   try {
     await addItem(session.code, { url, title, note, category, source: 'extension' });
     const cat = session.categories.find((c) => c.id === category);
-    flash('✓', '#1e8e3e', `Saved to ${cat ? cat.name : 'CheckLater'}`);
+    flash('✓', '#1e8e3e', `Saved to ${cat ? cat.name : 'Laterbeam'}`);
   } catch (e) {
     console.error(e);
     flash('!', '#d93025', `Save failed: ${e.message}`);

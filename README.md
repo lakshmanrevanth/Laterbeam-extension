@@ -1,10 +1,10 @@
 <div align="center">
 
-<img src="web/public/icons/icon.svg" width="72" height="72" alt="CheckLater logo" />
+<img src="web/public/icons/icon.svg" width="72" height="72" alt="Laterbeam logo" />
 
-# CheckLater
+# Laterbeam
 
-**Save it now. Check it later. On any device.**
+**Beam it now. Open it later. On any device.**
 
 Save links from Chrome or any app on your phone into one private space, then open them later anywhere.<br />
 No passwords, live sync, and it works offline.
@@ -18,7 +18,7 @@ No passwords, live sync, and it works offline.
 [**Download the extension**](https://github.com/lakshmanrevanth/check-later-extension/releases/latest) ·
 [Docs](docs/)
 
-<img src="docs/screenshots/hero.png" alt="CheckLater on desktop and phone" width="100%" />
+<img src="docs/screenshots/hero.png" alt="Laterbeam on desktop and phone" width="100%" />
 
 </div>
 
@@ -26,7 +26,7 @@ No passwords, live sync, and it works offline.
 
 ## Contents
 
-- [Why CheckLater](#why-checklater)
+- [Why Laterbeam](#why-laterbeam)
 - [Features](#features)
 - [Screenshots and prototypes](#screenshots-and-prototypes)
 - [Install and use](#install-and-use)
@@ -36,13 +36,14 @@ No passwords, live sync, and it works offline.
 - [Security and privacy](#security-and-privacy)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
+- [Developer](#developer)
 - [License](#license)
 
-## Why CheckLater
+## Why Laterbeam
 
 You find something worth reading on your phone, but you're busy. You spot a video at work and want to watch it tonight. The link ends up in a chat with yourself, a pile of tabs, or nowhere.
 
-CheckLater gives every link one home:
+Laterbeam gives every link one home:
 
 - **One tap to save.** Use the Chrome toolbar, the right-click menu, a keyboard shortcut, or the Android share sheet.
 - **One code instead of an account.** When you sign up you get a code like `K7QM-2HXP-9WAD`. Enter it on any phone, laptop or browser to see the same list, synced live.
@@ -71,6 +72,10 @@ Every image here is generated from the real app by `npm run screenshots`, using 
 |:-:|:-:|:-:|:-:|
 | <img src="docs/screenshots/mobile-list.png" width="200" alt="Saved links on a phone" /> | <img src="docs/screenshots/mobile-list-dark.png" width="200" alt="Dark mode" /> | <img src="docs/screenshots/mobile-item.png" width="200" alt="Actions for a saved link" /> | <img src="docs/screenshots/mobile-account.png" width="200" alt="Account sheet with code and QR" /> |
 
+| Welcome | Save a link |
+|:-:|:-:|
+| <img src="docs/screenshots/mobile-welcome.png" width="200" alt="Laterbeam welcome screen on a phone" /> | <img src="docs/screenshots/mobile-add.png" width="200" alt="Saving a link on a phone" /> |
+
 | Desktop | Desktop (dark) |
 |:-:|:-:|
 | <img src="docs/screenshots/desktop-list.png" alt="Desktop layout with sidebar" /> | <img src="docs/screenshots/desktop-list-dark.png" alt="Desktop layout, dark" /> |
@@ -82,6 +87,13 @@ Every image here is generated from the real app by `npm run screenshots`, using 
 **Chrome extension:** popup, right-click menu, after saving, and first run.
 
 <img src="docs/screenshots/extension-popup.png" alt="Chrome extension states" />
+
+<details>
+<summary>Dark mode</summary>
+
+<img src="docs/screenshots/extension-popup-dark.png" alt="Chrome extension states, dark" />
+
+</details>
 
 The extension prototype is in [`docs/prototypes/extension-popup.html`](docs/prototypes/extension-popup.html). It uses the real `extension/popup.css`, so it can't drift from the product. Open it in a browser to inspect it.
 
@@ -95,10 +107,10 @@ Open **<https://checklater-ea1ba.web.app>**, choose **Create a code**, enter you
 
 **From a release (recommended):**
 
-1. Download `checklater-extension-vX.Y.Z.zip` from the [latest release](https://github.com/lakshmanrevanth/check-later-extension/releases/latest) and unzip it.
+1. Download `laterbeam-extension-vX.Y.Z.zip` from the [latest release](https://github.com/lakshmanrevanth/check-later-extension/releases/latest) and unzip it.
 2. Open `chrome://extensions` and turn on **Developer mode** (top right).
 3. Click **Load unpacked** and select the unzipped folder.
-4. Click the CheckLater icon in the toolbar and enter your code (or create one).
+4. Click the Laterbeam icon in the toolbar and enter your code (or create one).
 
 **Shortcuts:** `Alt+Shift+S` opens the popup, and `Alt+Shift+D` saves the current page straight away using its smart category. You can change both at `chrome://extensions/shortcuts`.
 
@@ -106,7 +118,7 @@ Edge, Brave and other Chromium browsers work the same way.
 
 ### Android
 
-Open the app in Chrome, then choose **⋮ → Install app** (or **Add to Home screen**). CheckLater now appears in the **Share** menu of YouTube, Chrome, Instagram, WhatsApp and other apps. Shared captions become the note.
+Open the app in Chrome, then choose **⋮ → Install app** (or **Add to Home screen**). Laterbeam now appears in the **Share** menu of YouTube, Chrome, Instagram, WhatsApp and other apps. Shared captions become the note.
 
 ### iPhone and iPad
 
@@ -185,7 +197,7 @@ For the full guide, including a custom domain, App Check, publishing to the Chro
 | `npm run build` | Production build into `web/dist` |
 | `npm run preview` | Serve the production build locally |
 | `npm test` | Unit tests: codes, categories, URL cleaning, import sanitising, REST encoding |
-| `npm run package` | Zip the extension into `release/checklater-extension-v<version>.zip` (Chrome Web Store ready) |
+| `npm run package` | Zip the extension into `release/laterbeam-extension-v<version>.zip` (Chrome Web Store ready) |
 | `npm run screenshots` | Regenerate `docs/screenshots/` from demo mode. Fails on any page error or CSP violation |
 | `npm run deploy` | Build and deploy hosting + Firestore rules |
 | `npm run sync` | Write `shared/config.js` from `.env` and copy `shared/` into the extension |
@@ -248,6 +260,16 @@ Have an idea? [Open a feature request](https://github.com/lakshmanrevanth/check-
 
 Contributions are welcome. [CONTRIBUTING.md](CONTRIBUTING.md) covers setup, conventions and how to change the Firestore rules safely. Please follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 
+## Developer
+
+Laterbeam is designed and built by **Lakshman Revanth Reddy**.
+
+- GitHub: [@lakshmanrevanth](https://github.com/lakshmanrevanth)
+- Portfolio: [revv-folio.netlify.app](https://revv-folio.netlify.app/)
+- X (Twitter): [@lakshmanrevanth](https://x.com/lakshmanrevanth)
+
+Want to work together or have feedback? Reach out through the portfolio, or [open an issue](https://github.com/lakshmanrevanth/check-later-extension/issues).
+
 ## License
 
-[MIT](LICENSE) © lakshmanrevanth
+[MIT](LICENSE) © Lakshman Revanth Reddy
