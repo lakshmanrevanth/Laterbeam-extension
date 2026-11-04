@@ -2,7 +2,7 @@
 
 **Effective date:** 3 November 2026
 
-This policy covers the Laterbeam web app (hosted at <https://checklater-ea1ba.web.app>) and the Laterbeam Chrome extension. Laterbeam is an open-source project; you can read all of its code at <https://github.com/lakshmanrevanth/check-later-extension>.
+This policy covers the Laterbeam web app (hosted at <https://laterbeam.web.app>) and the Laterbeam Chrome extension. Laterbeam is an open-source project; you can read all of its code at <https://github.com/lakshmanrevanth/check-later-extension>.
 
 If you run your own copy of Laterbeam on your own Firebase project, you are the operator of that copy and this policy doesn't cover it.
 

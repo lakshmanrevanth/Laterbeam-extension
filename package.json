@@ -13,7 +13,7 @@
     "type": "git",
     "url": "https://github.com/lakshmanrevanth/check-later-extension.git"
   },
-  "homepage": "https://checklater-ea1ba.web.app",
+  "homepage": "https://laterbeam.web.app",
   "engines": {
     "node": ">=22"
   },

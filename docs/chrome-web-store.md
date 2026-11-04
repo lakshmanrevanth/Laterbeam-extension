@@ -51,7 +51,7 @@ Your code works like a password: anyone who has it can see and edit your links, 
 
 **Store icon:** `extension/icons/icon128.png`
 
-**Official URL / homepage:** `https://checklater-ea1ba.web.app`
+**Official URL / homepage:** `https://laterbeam.web.app`
 
 **Support URL:** `https://github.com/lakshmanrevanth/check-later-extension/issues`
 
@@ -152,7 +152,7 @@ These declarations are conservative: the data is collected only when the user ta
 **Privacy policy URL**
 
 ```
-https://checklater-ea1ba.web.app/privacy
+https://laterbeam.web.app/privacy
 ```
 
 (For your own deployment: `https://<project-id>.web.app/privacy`.)
@@ -166,5 +166,5 @@ https://checklater-ea1ba.web.app/privacy
 ## Reviewer notes (optional "test instructions" field)
 
 ```
-No login credentials are needed. Click the toolbar icon → "New here", enter any name, click "Create my code" and "I saved it. Continue", then click "Save to Laterbeam". Open https://checklater-ea1ba.web.app and enter the same code to see saved links.
+No login credentials are needed. Click the toolbar icon → "New here", enter any name, click "Create my code" and "I saved it. Continue", then click "Save to Laterbeam". Open https://laterbeam.web.app and enter the same code to see saved links.
 ```
