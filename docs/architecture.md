@@ -1,6 +1,6 @@
 # Architecture
 
-CheckLater has two clients, the web app (PWA) and the Chrome extension, and one backend: a Firebase project with Anonymous Auth, Cloud Firestore and Hosting. There is no custom server.
+Laterbeam has two clients, the web app (PWA) and the Chrome extension, and one backend: a Firebase project with Anonymous Auth, Cloud Firestore and Hosting. There is no custom server.
 
 ## Components
 

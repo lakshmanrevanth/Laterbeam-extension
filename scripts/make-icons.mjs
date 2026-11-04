@@ -1,10 +1,16 @@
-// Renders the CheckLater icon (same shape as web/public/icons/icon.svg) to PNGs.
+// Renders the Laterbeam icon (same shape as web/public/icons/icon.svg) to PNGs.
 // No dependencies: a tiny anti-aliased rasterizer + PNG encoder.
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { deflateSync } from 'node:zlib';
 
-const BRAND = [0x5b, 0x5b, 0xd6];
+// Gradient from bottom-left to top-right, as in icon.svg.
+const FROM = [0x5b, 0x5b, 0xd6];
+const TO = [0x22, 0xb8, 0xf0];
 const WHITE = [255, 255, 255];
+const brandAt = (x, y) => {
+  const t = Math.max(0, Math.min(1, (x + (100 - y)) / 200));
+  return FROM.map((c, i) => Math.round(c + (TO[i] - c) * t));
+};
 
 // Shapes in a 0..100 coordinate space.
 const inRoundRect = (x, y, r) => {
@@ -13,25 +19,37 @@ const inRoundRect = (x, y, r) => {
   return x >= 0 && x <= 100 && y >= 0 && y <= 100 && (x - cx) ** 2 + (y - cy) ** 2 <= r * r;
 };
 const inBookmark = (x, y) =>
-  x >= 32 && x <= 68 && y >= 22 && y <= 80 && y <= 64 + (16 * Math.abs(x - 50)) / 18;
+  x >= 30 && x <= 70 && y >= 20 && y <= 82 && y <= 66 + (16 * Math.abs(x - 50)) / 20;
 const distToSeg = (px, py, [ax, ay], [bx, by]) => {
   const t = Math.max(0, Math.min(1, ((px - ax) * (bx - ax) + (py - ay) * (by - ay)) / ((bx - ax) ** 2 + (by - ay) ** 2)));
   return Math.hypot(px - (ax + t * (bx - ax)), py - (ay + t * (by - ay)));
 };
-const inCheck = (x, y) => Math.min(distToSeg(x, y, [40, 43], [47, 50]), distToSeg(x, y, [47, 50], [60, 36])) <= 3.5;
+// Upward "beam" arrow inside the bookmark.
+const inArrow = (x, y) =>
+  Math.min(
+    distToSeg(x, y, [50, 57], [50, 33]),
+    distToSeg(x, y, [40, 43], [50, 33]),
+    distToSeg(x, y, [50, 33], [60, 43]),
+  ) <= 3.5;
+// Four-point spark at the top right.
+const inSpark = (x, y) => Math.sqrt(Math.abs(x - 80)) + Math.sqrt(Math.abs(y - 20)) <= Math.sqrt(8);
+
+function shape(x, y) {
+  if (inSpark(x, y)) return [...WHITE, 255];
+  if (inBookmark(x, y)) return inArrow(x, y) ? [...brandAt(x, y), 255] : [...WHITE, 255];
+  return [...brandAt(x, y), 255];
+}
 
 // Returns [r,g,b,a] for a point. `maskable` = full-bleed background, content shrunk into the safe zone.
-function sample(x, y, maskable) {
+function sample(x, y, maskable, tiny) {
   if (maskable) {
     const s = 0.72; // keep content inside the 80% safe circle
-    const ux = 50 + (x - 50) / s;
-    const uy = 50 + (y - 50) / s;
-    if (inBookmark(ux, uy)) return inCheck(ux, uy) ? [...BRAND, 255] : [...WHITE, 255];
-    return [...BRAND, 255];
+    return shape(50 + (x - 50) / s, 50 + (y - 50) / s);
   }
   if (!inRoundRect(x, y, 22)) return [0, 0, 0, 0];
-  if (inBookmark(x, y)) return inCheck(x, y) ? [...BRAND, 255] : [...WHITE, 255];
-  return [...BRAND, 255];
+  // The spark turns to noise at 16px, so leave it out there.
+  if (tiny && inSpark(x, y)) return [...brandAt(x, y), 255];
+  return shape(x, y);
 }
 
 function render(size, maskable = false) {
@@ -42,7 +60,7 @@ function render(size, maskable = false) {
       let r = 0, g = 0, b = 0, a = 0;
       for (let sy = 0; sy < SS; sy++) {
         for (let sx = 0; sx < SS; sx++) {
-          const [cr, cg, cb, ca] = sample(((i + (sx + 0.5) / SS) / size) * 100, ((j + (sy + 0.5) / SS) / size) * 100, maskable);
+          const [cr, cg, cb, ca] = sample(((i + (sx + 0.5) / SS) / size) * 100, ((j + (sy + 0.5) / SS) / size) * 100, maskable, size <= 16);
           r += cr * ca; g += cg * ca; b += cb * ca; a += ca;
         }
       }

@@ -1,6 +1,6 @@
 # Code of Conduct
 
-CheckLater adopts the [Contributor Covenant, version 2.1](https://www.contributor-covenant.org/version/2/1/code_of_conduct/) as its code of conduct. By taking part in this project (issues, pull requests, discussions, reviews) you agree to follow it.
+Laterbeam adopts the [Contributor Covenant, version 2.1](https://www.contributor-covenant.org/version/2/1/code_of_conduct/) as its code of conduct. By taking part in this project (issues, pull requests, discussions, reviews) you agree to follow it.
 
 In short: be respectful, assume good faith, give and accept constructive feedback, and don't harass anyone.
 

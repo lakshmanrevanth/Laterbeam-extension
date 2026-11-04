@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CheckLater web app
+   Laterbeam web app
    Tokens → base → components → screens. Theme: system by default,
    forced with <html data-theme="light|dark">.
    ========================================================================== */
@@ -507,6 +507,11 @@ dialog[open]::backdrop { animation: fade .2s ease-out; }
 .about a { display: inline-flex; align-items: center; gap: 5px; color: var(--muted); text-decoration: none; font-weight: 600; }
 .about a:hover { color: var(--text); }
 .about .ic { width: 15px; height: 15px; }
+.credit { margin: 0; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.credit strong { color: var(--text-2); font-weight: 650; }
+.credit a { display: inline-flex; align-items: center; gap: 4px; color: var(--brand); text-decoration: none; font-weight: 600; }
+.credit a:hover { text-decoration: underline; }
+.credit .ic { width: 14px; height: 14px; }
 
 /* ---------- Toast ---------- */
 .toast {

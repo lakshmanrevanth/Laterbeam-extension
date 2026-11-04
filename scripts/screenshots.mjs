@@ -136,7 +136,7 @@ const SHOTS = [
 const only = process.argv.slice(2);
 mkdirSync(OUT, { recursive: true });
 await new Promise((r) => server.listen(PORT, '127.0.0.1', r));
-const profile = mkdtempSync(join(tmpdir(), 'checklater-shots-'));
+const profile = mkdtempSync(join(tmpdir(), 'laterbeam-shots-'));
 const chrome = spawn(findChrome(), [
   '--headless=new', `--remote-debugging-port=${DEBUG_PORT}`, `--user-data-dir=${profile}`,
   '--no-first-run', '--no-default-browser-check', '--hide-scrollbars', '--force-color-profile=srgb', 'about:blank',

@@ -1,5 +1,5 @@
 name: Bug report
-description: Something in CheckLater doesn't work as expected.
+description: Something in Laterbeam doesn't work as expected.
 labels: [bug]
 body:
   - type: markdown

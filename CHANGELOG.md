@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+- **Renamed CheckLater to Laterbeam**, with a new logo (bookmark with an upward beam on a violet-to-sky gradient) and tagline "Beam it now. Open it later." Saved sessions, theme and older JSON exports keep working.
+- Release zip is now `laterbeam-extension-v<version>.zip`.
+
+### Added
+- Developer credit (Lakshman Revanth Reddy, GitHub and portfolio links) in the web app, extension popup, privacy page and README.
+
 ## [1.0.0] - 2026-11-03
 
 ### Added

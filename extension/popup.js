@@ -183,13 +183,13 @@ async function save() {
       source: 'extension',
     });
     const cat = session.categories.find((c) => c.id === selectedCat);
-    $('savedMsg').textContent = `Saved to ${cat ? `${cat.emoji} ${cat.name}` : 'CheckLater'}`;
+    $('savedMsg').textContent = `Saved to ${cat ? `${cat.emoji} ${cat.name}` : 'Laterbeam'}`;
     show('viewSaved');
     setTimeout(() => window.close(), 1100);
   } catch (e) {
     showError($('saveError'), friendly(e));
     btn.disabled = false;
-    $('saveLabel').textContent = 'Save to CheckLater';
+    $('saveLabel').textContent = 'Save to Laterbeam';
   }
 }
 

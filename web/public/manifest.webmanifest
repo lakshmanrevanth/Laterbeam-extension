@@ -1,7 +1,7 @@
 {
-  "name": "CheckLater",
-  "short_name": "CheckLater",
-  "description": "Save links from any browser or phone, check them later.",
+  "name": "Laterbeam",
+  "short_name": "Laterbeam",
+  "description": "Beam links from any browser or phone, open them later on any device.",
   "id": "/",
   "start_url": "/",
   "scope": "/",

@@ -1,7 +1,7 @@
-// Offline support: the app shell is cached so CheckLater opens without a network.
+// Offline support: the app shell is cached so Laterbeam opens without a network.
 // Saved links offline are handled separately by Firestore's built-in cache.
 // __BUILD_ID__ is replaced at build time, so every deploy installs a fresh cache and drops the old one.
-const CACHE = 'checklater-__BUILD_ID__';
+const CACHE = 'laterbeam-__BUILD_ID__';
 const SHELL = ['/', '/manifest.webmanifest', '/icons/icon.svg', '/icons/icon-192.png'];
 
 self.addEventListener('install', (e) => {

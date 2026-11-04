@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Privacy Policy · CheckLater</title>
-  <meta name="description" content="What CheckLater stores, where, and why." />
+  <title>Privacy Policy · Laterbeam</title>
+  <meta name="description" content="What Laterbeam stores, where, and why." />
   <meta name="color-scheme" content="light dark" />
   <meta name="theme-color" content="#5b5bd6" />
   <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
@@ -14,22 +14,22 @@
   <header class="top">
     <a class="brand" href="/">
       <img src="/icons/icon.svg" alt="" width="28" height="28" />
-      <span>CheckLater</span>
+      <span>Laterbeam</span>
     </a>
-    <a class="btn" href="/">Open CheckLater</a>
+    <a class="btn" href="/">Open Laterbeam</a>
   </header>
 
   <main class="doc">
     <h1>Privacy Policy</h1>
     <p class="meta">Effective date: 3 November 2026</p>
 
-    <p>This policy covers the CheckLater web app (hosted at <a href="https://checklater-ea1ba.web.app">checklater-ea1ba.web.app</a>) and the CheckLater Chrome extension. CheckLater is open source; you can read all of its code on <a href="https://github.com/lakshmanrevanth/check-later-extension">GitHub</a>.</p>
-    <p>If you run your own copy of CheckLater on your own Firebase project, you are the operator of that copy and this policy doesn't cover it.</p>
+    <p>This policy covers the Laterbeam web app (hosted at <a href="https://checklater-ea1ba.web.app">checklater-ea1ba.web.app</a>) and the Laterbeam Chrome extension. Laterbeam is open source; you can read all of its code on <a href="https://github.com/lakshmanrevanth/check-later-extension">GitHub</a>.</p>
+    <p>If you run your own copy of Laterbeam on your own Firebase project, you are the operator of that copy and this policy doesn't cover it.</p>
 
     <section class="summary">
       <h2>In short</h2>
       <ul>
-        <li>CheckLater stores only the links <strong>you choose to save</strong>, plus the name you sign up with.</li>
+        <li>Laterbeam stores only the links <strong>you choose to save</strong>, plus the name you sign up with.</li>
         <li>It does <strong>not</strong> collect your browsing history, has <strong>no analytics</strong>, shows <strong>no ads</strong>, and does <strong>not sell or share</strong> your data.</li>
         <li>Data is stored in Google Firebase (Cloud Firestore).</li>
       </ul>
@@ -61,9 +61,9 @@
     </div>
 
     <h2 id="where">Where it's stored</h2>
-    <p>All of this is stored in <strong>Google Cloud Firestore</strong>, part of Google Firebase, in the project that runs CheckLater. Google processes the data as our infrastructure provider and, like any web service, receives standard request information such as your IP address. See <a href="https://firebase.google.com/support/privacy">Firebase's privacy and security information</a>.</p>
+    <p>All of this is stored in <strong>Google Cloud Firestore</strong>, part of Google Firebase, in the project that runs Laterbeam. Google processes the data as our infrastructure provider and, like any web service, receives standard request information such as your IP address. See <a href="https://firebase.google.com/support/privacy">Firebase's privacy and security information</a>.</p>
     <p>Each device signs in with <strong>Firebase Anonymous Authentication</strong>, which creates a random user identifier for that device. It isn't linked to your name, email or Google account. Your space is identified by its code, not by this identifier.</p>
-    <p>On your devices, CheckLater keeps:</p>
+    <p>On your devices, Laterbeam keeps:</p>
     <ul>
       <li><strong>Web app:</strong> your code and name in the browser's local storage, and an offline copy of your links in the browser's storage (Firestore offline cache), plus your theme choice.</li>
       <li><strong>Extension:</strong> your code, name, categories and Firebase sign-in tokens in <code>chrome.storage.local</code>.</li>
@@ -73,11 +73,11 @@
     <p>Anyone who has your <strong>space code</strong> can read and change the links in that space. Treat the code like a password and don't share it publicly. We don't share your data with anyone else.</p>
 
     <h2 id="favicons">Favicons</h2>
-    <p>To show website icons, CheckLater loads them from Google's favicon service (<code>https://www.google.com/s2/favicons</code>). That request tells Google the <strong>domain</strong> of each saved link (not the full URL) when the icon is displayed. The extension popup does the same for the current page if Chrome doesn't provide an icon itself.</p>
+    <p>To show website icons, Laterbeam loads them from Google's favicon service (<code>https://www.google.com/s2/favicons</code>). That request tells Google the <strong>domain</strong> of each saved link (not the full URL) when the icon is displayed. The extension popup does the same for the current page if Chrome doesn't provide an icon itself.</p>
 
     <h2 id="dont">What we don't do</h2>
     <ul>
-      <li>No browsing history. CheckLater only stores pages you explicitly save.</li>
+      <li>No browsing history. Laterbeam only stores pages you explicitly save.</li>
       <li>No analytics, tracking pixels or advertising.</li>
       <li>No selling, renting or sharing of your data with third parties.</li>
       <li>No use of your data for credit, lending or any purpose unrelated to saving links.</li>
@@ -89,7 +89,7 @@
         <thead><tr><th>Permission</th><th>Why it's needed</th></tr></thead>
         <tbody>
           <tr><td><code>activeTab</code></td><td>Reads the current tab's URL and title, <strong>only</strong> when you click the toolbar button, use the right-click menu or press a keyboard shortcut. While the popup is open, it also checks your space for that URL to warn about duplicates. Nothing is saved unless you save it.</td></tr>
-          <tr><td><code>contextMenus</code></td><td>Adds the <strong>Send to CheckLater</strong> right-click menu for pages, links, images, videos and selected text.</td></tr>
+          <tr><td><code>contextMenus</code></td><td>Adds the <strong>Send to Laterbeam</strong> right-click menu for pages, links, images, videos and selected text.</td></tr>
           <tr><td><code>storage</code></td><td>Keeps your space code, name, categories and Firebase sign-in token on this computer, so you stay signed in.</td></tr>
           <tr><td><code>firestore.googleapis.com</code></td><td>Reads and writes your saved links in Cloud Firestore.</td></tr>
           <tr><td><code>identitytoolkit.googleapis.com</code></td><td>Creates the anonymous Firebase sign-in for this browser.</td></tr>
@@ -107,7 +107,7 @@
     </ul>
 
     <h2 id="children">Children</h2>
-    <p>CheckLater isn't directed at children under 13, and we don't knowingly collect their data.</p>
+    <p>Laterbeam isn't directed at children under 13, and we don't knowingly collect their data.</p>
 
     <h2 id="changes">Changes</h2>
     <p>If this policy changes, we'll update this page and the copy in the repository, with a new effective date. Significant changes will be noted in the <a href="https://github.com/lakshmanrevanth/check-later-extension/blob/main/CHANGELOG.md">changelog</a>.</p>
@@ -117,9 +117,11 @@
   </main>
 
   <footer class="foot">
-    <a href="/">Open CheckLater</a>
+    <a href="/">Open Laterbeam</a>
     <span aria-hidden="true">·</span>
     <a href="https://github.com/lakshmanrevanth/check-later-extension">Source on GitHub</a>
+    <span aria-hidden="true">·</span>
+    <span>Built by <a href="https://github.com/lakshmanrevanth">Lakshman Revanth Reddy</a> (<a href="https://revv-folio.netlify.app/">portfolio</a>)</span>
   </footer>
 </body>
 </html>

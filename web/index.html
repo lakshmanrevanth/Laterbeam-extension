@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>CheckLater: save links, check them later</title>
+  <title>Laterbeam: beam links now, open them later</title>
   <meta name="description" content="Save links from Chrome or any app on your phone into one private space. No passwords, live sync, works offline." />
   <meta name="theme-color" content="#f7f7fb" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#0e0e13" media="(prefers-color-scheme: dark)" />
-  <meta property="og:title" content="CheckLater" />
-  <meta property="og:description" content="Save it now. Check it later. On any device." />
+  <meta property="og:title" content="Laterbeam" />
+  <meta property="og:description" content="Beam it now. Open it later. On any device." />
   <meta property="og:image" content="/icons/icon-512.png" />
   <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
@@ -47,6 +47,7 @@
     <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></symbol>
     <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></symbol>
     <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19M12 2.5a14.5 14.5 0 0 1 0 19M12 2.5a14.5 14.5 0 0 0 0 19"/></symbol>
     <symbol id="i-github" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-.9-2.6c3.1-.4 6.4-1.5 6.4-7A5.4 5.4 0 0 0 20 4.8 5 5 0 0 0 19.9 1S18.7.7 16 2.5a13.4 13.4 0 0 0-7 0C6.3.7 5.1 1 5.1 1A5 5 0 0 0 5 4.8a5.4 5.4 0 0 0-1.5 3.7c0 5.5 3.3 6.6 6.4 7a3.4 3.4 0 0 0-.9 2.6V22"/></symbol>
   </svg>
 
@@ -67,8 +68,8 @@
   <main id="viewWelcome" class="welcome" hidden>
     <section class="hero">
       <div class="hero-inner">
-        <div class="brand brand-lg"><img src="/icons/icon.svg" alt="" width="40" height="40" /><span>CheckLater</span></div>
-        <h1>Save it now.<br />Check it later.</h1>
+        <div class="brand brand-lg"><img src="/icons/icon.svg" alt="" width="40" height="40" /><span>Laterbeam</span></div>
+        <h1>Beam it now.<br />Open it later.</h1>
         <p class="lead">One private place for every link you mean to come back to: from Chrome, your phone, or any app.</p>
         <ul class="features">
           <li><span class="feat-ic"><svg class="ic"><use href="#i-share"/></svg></span><div><strong>Save from anywhere</strong><span>Chrome extension, Android share sheet, or paste a link.</span></div></li>
@@ -80,7 +81,7 @@
 
     <section class="auth">
       <div class="auth-card">
-        <div class="brand brand-auth"><img src="/icons/icon.svg" alt="" width="32" height="32" /><span>CheckLater</span></div>
+        <div class="brand brand-auth"><img src="/icons/icon.svg" alt="" width="32" height="32" /><span>Laterbeam</span></div>
         <div id="authTabs" class="segmented" role="tablist">
           <button class="seg active" data-tab="signin" role="tab" aria-selected="true">I have a code</button>
           <button class="seg" data-tab="signup" role="tab" aria-selected="false">Create a code</button>
@@ -133,7 +134,7 @@
     </div>
 
     <header class="appbar">
-      <a class="brand brand-bar" href="/"><img src="/icons/icon.svg" alt="" width="28" height="28" /><span>CheckLater</span></a>
+      <a class="brand brand-bar" href="/"><img src="/icons/icon.svg" alt="" width="28" height="28" /><span>Laterbeam</span></a>
       <label class="search">
         <svg class="ic"><use href="#i-search"/></svg>
         <input id="searchInput" type="search" placeholder="Search links, notes, sites" aria-label="Search" autocomplete="off" />
@@ -145,7 +146,7 @@
     </header>
 
     <aside class="side">
-      <a class="brand brand-side" href="/"><img src="/icons/icon.svg" alt="" width="30" height="30" /><span>CheckLater</span></a>
+      <a class="brand brand-side" href="/"><img src="/icons/icon.svg" alt="" width="30" height="30" /><span>Laterbeam</span></a>
       <div class="views" role="tablist" aria-label="Status">
         <button class="view-tab active" data-view="unread" role="tab"><svg class="ic"><use href="#i-inbox"/></svg><span>To check</span><span class="count" id="countUnread">0</span></button>
         <button class="view-tab" data-view="done" role="tab"><svg class="ic"><use href="#i-done"/></svg><span>Done</span><span class="count" id="countDone">0</span></button>
@@ -221,7 +222,7 @@
         <span id="accAvatar" class="avatar lg"></span>
         <div class="grow">
           <h2 id="accName"></h2>
-          <p class="muted small">Your CheckLater space</p>
+          <p class="muted small">Your Laterbeam space</p>
         </div>
         <button type="button" class="icon-btn" data-close aria-label="Close"><svg class="ic"><use href="#i-x"/></svg></button>
       </div>
@@ -275,9 +276,13 @@
 
       <footer class="about muted small">
         <span id="appVersion"></span>
-        <a href="https://github.com/lakshmanrevanth/check-later-extension" target="_blank" rel="noopener"><svg class="ic"><use href="#i-github"/></svg>GitHub</a>
+        <a href="https://github.com/lakshmanrevanth/check-later-extension" target="_blank" rel="noopener"><svg class="ic"><use href="#i-github"/></svg>Source</a>
         <a href="/privacy" target="_blank" rel="noopener">Privacy</a>
       </footer>
+      <p class="credit muted small">Built by <strong>Lakshman Revanth Reddy</strong> ·
+        <a href="https://github.com/lakshmanrevanth" target="_blank" rel="noopener">GitHub</a> ·
+        <a href="https://revv-folio.netlify.app/" target="_blank" rel="noopener"><svg class="ic"><use href="#i-globe"/></svg>Portfolio</a>
+      </p>
     </div>
   </dialog>
 

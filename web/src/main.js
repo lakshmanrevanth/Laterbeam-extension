@@ -9,6 +9,7 @@ const $ = (id) => document.getElementById(id);
 const VIEWS = ['viewSetup', 'viewLoading', 'viewWelcome', 'viewApp'];
 const show = (id) => VIEWS.forEach((v) => ($(v).hidden = v !== id));
 
+// Storage keys keep the old "checklater" prefix so existing users stay signed in after the rename.
 const SESSION_KEY = 'checklater.session';
 const PENDING_SHARE_KEY = 'checklater.pendingShare';
 const THEME_KEY = 'checklater.theme';
@@ -109,7 +110,7 @@ function renderThemeSeg() {
 }
 
 // ---------- Share target & deep links ----------
-// Android "Share → CheckLater" opens /share?title=&text=&url= (see manifest.webmanifest).
+// Android "Share → Laterbeam" opens /share?title=&text=&url= (see manifest.webmanifest).
 function captureIncoming() {
   const url = new URL(location.href);
   let pendingCode = null;
@@ -522,7 +523,7 @@ function submitAdd(e) {
   } else {
     db.addItem(state.session.code, fields).catch(fail);
     const cat = state.categories.find((c) => c.id === fields.category);
-    toast(`Saved to ${cat ? cat.name : 'CheckLater'}${navigator.onLine ? '' : '. It will sync when you’re online'}`);
+    toast(`Saved to ${cat ? cat.name : 'Laterbeam'}${navigator.onLine ? '' : '. It will sync when you’re online'}`);
   }
 }
 
@@ -590,7 +591,7 @@ async function deleteCategory(cat) {
 
 function exportJson() {
   const data = {
-    app: 'checklater',
+    app: 'laterbeam',
     version: 1,
     exportedAt: new Date().toISOString(),
     username: state.session.username,
@@ -599,7 +600,7 @@ function exportJson() {
   };
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
-  a.download = `checklater-${new Date().toISOString().slice(0, 10)}.json`;
+  a.download = `laterbeam-${new Date().toISOString().slice(0, 10)}.json`;
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   toast(`Exported ${plural(state.items.length, 'link')}`);
@@ -610,7 +611,7 @@ async function importJson(file) {
     if (file.size > 10 * 1024 * 1024) throw new Error('That file is too big (over 10 MB).');
     const data = JSON.parse(await file.text());
     const raw = Array.isArray(data) ? data : data?.items;
-    if (!Array.isArray(raw)) throw new Error('That doesn’t look like a CheckLater export.');
+    if (!Array.isArray(raw)) throw new Error('That doesn’t look like a Laterbeam export.');
     const have = new Set(state.items.map((i) => i.url));
     const fresh = [];
     for (const r of raw.slice(0, 5000)) {
@@ -778,7 +779,7 @@ function openDemoScreen() {
 
 // ---------- Boot ----------
 (async function boot() {
-  $('appVersion').textContent = `CheckLater v${__APP_VERSION__}`;
+  $('appVersion').textContent = `Laterbeam v${__APP_VERSION__}`;
   if ('serviceWorker' in navigator && import.meta.env.PROD && !DEMO) {
     navigator.serviceWorker.register('/sw.js').catch(() => {});
   }
