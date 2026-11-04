@@ -51,10 +51,10 @@ Every device signs in anonymously. Without this, the apps show "Enable Anonymous
 ```bash
 npm install -g firebase-tools     # or use npx firebase …
 firebase login
-firebase use --add                # pick your project, alias e.g. "default"
+cp .firebaserc.example .firebaserc   # then replace your-project-id (3 places)
 ```
 
-`firebase use --add` writes `.firebaserc`, which is gitignored. You can also copy `.firebaserc.example` to `.firebaserc` and put in your project id.
+`.firebaserc` is gitignored. `firebase.json` deploys hosting to the target `app`, and `.firebaserc` maps that target to one or more hosting sites. To serve the app from a second address too (for example `my-name.web.app`), create the site with `firebase hosting:sites:create my-name` and add it to the `app` list.
 
 ## 6. Deploy
 

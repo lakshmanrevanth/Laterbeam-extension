@@ -13,8 +13,8 @@ No passwords, live sync, and it works offline.
 [![Release](https://img.shields.io/github/v/release/lakshmanrevanth/check-later-extension?sort=semver)](https://github.com/lakshmanrevanth/check-later-extension/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-5b5bd6.svg)](LICENSE)
 
-[**Open the app**](https://checklater-ea1ba.web.app) ·
-[**Try the demo**](https://checklater-ea1ba.web.app/?demo) ·
+[**Open the app**](https://laterbeam.web.app) ·
+[**Try the demo**](https://laterbeam.web.app/?demo) ·
 [**Download the extension**](https://github.com/lakshmanrevanth/check-later-extension/releases/latest) ·
 [Docs](docs/)
 
@@ -101,7 +101,7 @@ The extension prototype is in [`docs/prototypes/extension-popup.html`](docs/prot
 
 ### On the web (any device)
 
-Open **<https://checklater-ea1ba.web.app>**, choose **Create a code**, enter your name, and keep the code somewhere safe, such as a password manager.
+Open **<https://laterbeam.web.app>**, choose **Create a code**, enter your name, and keep the code somewhere safe, such as a password manager.
 
 ### Chrome extension
 
@@ -130,7 +130,7 @@ On a device that's already signed in, tap your avatar. Scan the QR code with the
 
 ### Demo mode
 
-[`/?demo`](https://checklater-ea1ba.web.app/?demo) runs the full app on sample data in memory. Nothing is sent to Firebase, so it's safe to click around.
+[`/?demo`](https://laterbeam.web.app/?demo) runs the full app on sample data in memory. Nothing is sent to Firebase, so it's safe to click around.
 
 ## How it works
 
